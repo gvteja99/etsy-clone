@@ -19,10 +19,15 @@ function sellOnEtsy() {
   }
 
   let gotoSellPage = null;
+  console.log("Yo")
+  console.log("shopName",user.shopName )
   if (user.shopName === null) {
+    console.log("bleh");
     if (shop === null) {
+      console.log("blehname");
       gotoSellPage = <div>{<Navigate to="/shopName" />}</div>;
     } else {
+      console.log("blehshop");
       gotoSellPage = ( <div> <Navigate to="/shopHome" /> </div> );
     }
   } else {

@@ -47,6 +47,7 @@ function profileList({ setShowProfileLists }) {
               <span style={{ fontSize: "14px" }}>View your profile</span>
             </li>
             <li className="profile-icon">Account Settings</li>
+            
             <li onClick={handleSellOnEtsy} className="profile-icon">
               Sell on Etsy
             </li>

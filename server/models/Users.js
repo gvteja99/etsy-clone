@@ -38,7 +38,6 @@ const UserSchema = new mongoose.Schema({
 
   shopName: {
     type: String,
-    unique: true,
   },
   shopImage: {
     type: String,

@@ -28,16 +28,19 @@ function Signin({ setshowSignIn }) {
   const checkUser = (e) => {
     e.preventDefault();
 
+    console.log("Hi")
+
     Axios.post("http://localhost:4000/signin", { email: email, password: password, })
       .then((response) => {
         if (response.data.length === 1) {
           console.log(response);
           console.log(response.data[0]);
           console.log("In frontend signin");
+          console.log(response.data[0]._id);
 
           dispatch(
             login({
-              id: response.data[0].id,
+              id: response.data[0]._id,
               email: response.data[0].email,
               name: response.data[0].name,
               shopName: response.data[0].shopName,
@@ -52,7 +55,7 @@ function Signin({ setshowSignIn }) {
             })
           );
 
-          window.location.pathname = "/home";
+          //window.location.pathname = "/home";
         } else {
           setError("Invalid Credentials!");
         }

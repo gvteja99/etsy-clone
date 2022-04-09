@@ -5,15 +5,11 @@ const models = require("./models");
 const session = require("express-session");
 const mysql = require("mysql");
 const constants = require("./config/config.json");
-const Users = require("./models");
 const jwt = require("jsonwebtoken");
 const cookieParser = express("cocookie-parser");
 const multer = require("multer");
 const path = require("path");
 
-
-
-const { count } = require("console");
 
 const app = express();
 
@@ -119,8 +115,8 @@ app.use("/Images", express.static("./Images"));
 //routers middleware
 // app.use("/", userRoutes);
 app.post("/register", (req, res) => {
+  console.log("Register");
   const username = req.body.username;
-  console.log(username);
   const email = req.body.email;
   const password = req.body.password;
 
@@ -138,6 +134,7 @@ app.post("/register", (req, res) => {
 });
 
 app.get("/signin", (req, res) => {
+  console.log("Signin Get");
   if (req.session.user) {
     res.send({ loggedIn: true, user: req.session.user });
   } else {
@@ -146,6 +143,7 @@ app.get("/signin", (req, res) => {
 });
 
 app.post("/signin", (req, res) => {
+  console.log("Signin Post");
   const email = req.body.email;
   const password = req.body.password;
   console.log("In login post req");
@@ -460,13 +458,10 @@ app.put("/updateShopImageById/:id", (req, res) => {
       } else if (err) {
         return res.send(err);
       }
-
       const userId = req.params.id;
       const shopImage = req.file.filename;
-
       console.log("In update shop post ----------------------");
       console.log(shopImage);
-
       db.query(
         "UPDATE Users SET shopImage=? WHERE id=?",
         [shopImage, userId],
