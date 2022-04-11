@@ -55,7 +55,7 @@ function Signin({ setshowSignIn }) {
             })
           );
 
-          //window.location.pathname = "/home";
+          window.location.pathname = "/home";
         } else {
           setError("Invalid Credentials!");
         }

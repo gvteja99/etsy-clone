@@ -38,7 +38,7 @@ function profileDashboard() {
   const editProfile = () => { navigate("/updateProfile"); };
 
   const handleFavourite = (itemId, userId) => {
-    console.log("Favourites deletd" + itemId + userId);
+    console.log("Favourites deleted" + itemId + userId);
     Axios.delete(
       "http://localhost:4000/deleteFavourite/" + itemId + "/" + userId,
       {
@@ -67,16 +67,16 @@ function profileDashboard() {
             <div
               style={{ backgroundColor: "white", borderRadius: "50%", padding: "5px", }}
               className="favourite_icon"
-              onClick={() => { handleFavourite(pro.itemId, user.id); }}
+              onClick={() => { handleFavourite(pro.itemId._id, user.id); }}
             >
               <FavoriteBorderIcon />
             </div>
-            <img src={"/Images/" + pro.itemImage} className="card-img-top" alt="..." />
-            <p className="home_price"> <AirportShuttleIcon /> ${pro.itemPrice} </p>
+            <img src={"/Images/" + pro.itemId.itemImage} className="card-img-top" alt="..." />
+            <p className="home_price"> <AirportShuttleIcon /> ${pro.itemId.itemPrice} </p>
 
             <div className="card-body">
-              <h5 className="card-title">{pro.itemName}</h5>
-              <p className="card-text">{pro.itemDescription}</p>
+              <h5 className="card-title">{pro.itemId.itemName}</h5>
+              <p className="card-text">{pro.itemId.itemDescription}</p>
             </div>
           </div>
         </div>

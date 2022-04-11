@@ -9,7 +9,9 @@ const multer = require("multer");
 const path = require("path");
 const mongoose = require("mongoose");
 const UserModel = require("./models/Users");
-
+const ItemsModel = require("./models/Items");
+const FavouritesModel = require("./models/Favourites");
+const CartModel = require("./models/Cart");
 
 const app = express();
 
@@ -57,8 +59,8 @@ app.use(function (req, res, next) {
 });
 
 mongoose.connect(
-    "mongodb+srv://etsy_user:etsy_password@etsycluster.yz62f.mongodb.net/etsy_database?retryWrites=true&w=majority",
-    {useNewUrlParser: true,}
+  "mongodb+srv://etsy_user:etsy_password@etsycluster.yz62f.mongodb.net/etsy_database?retryWrites=true&w=majority",
+  { useNewUrlParser: true, }
 );
 
 // storage
@@ -115,124 +117,22 @@ app.post("/register", async (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const password = req.body.password;
-  const newUser = new UserModel({name: username,email: email,password: password,
-    fullAddress:null,city:null,phoneNumber:null,dob:null,gender:null,profilePic:null,
-    about:null,shopName:null,shopImage:null});
-  await newUser.save({}, (err, result) => {
+  const newUser = new UserModel({
+    name: username, email: email, password: password,
+    fullAddress: null, city: null, phoneNumber: null, dob: null, gender: null, profilePic: null,
+    about: null, shopName: null, shopImage: null
+  });
+   newUser.save({}, (err, result) => {
     if (err) {
-      console.log("err",err);
+      console.log("err", err);
       res.json(err);
-    } else { 
+    } else {
       console.log(result);
       res.send({ success: true, result });
     }
-  });});
-
-app.get("/signin", (req, res) => {
-  console.log("getsignin");
-    if (req.session.user) {
-      res.send({ loggedIn: true, user: req.session.user });
-    } else {
-      res.send({ loggedIn: false });
-    }
   });
+});
 
-app.post("/signin", (req, res) => {
-  console.log("postsigin");
-    const email = req.body.email;
-    const password = req.body.password;
-    UserModel.find({email:email, password: password},
-      (err, result) => {
-        if (err) {
-          res.send({ err: err });
-        }
-        if (result.length > 0) {
-          res.cookie("user", result[0].name, {
-            maxAge: 900000,
-            httpOnly: false,
-            path: "/",
-          });
-          req.session.user = result;
-          res.send(result);
-        } else {
-          res.send({ message: "Invalid creds" });
-        }
-      }
-    );
-  });
-
-  app.get("/user", (req, res) => {
-    console.log("hello" + req.session);
-    if (req.session.user) {
-      res.send({ loggedIn: true, user: req.session.user });
-    } else {
-      res.send({ loggedIn: false });
-    }
-  });
-
-  app.post("/findShopDuplicates", (req, res) => {
-    const shopName = req.body.shopName;
-    console.log("In findShopDuplicates " + shopName);
-      UserModel.find({shopName:shopName},
-      (err, result) => {
-        console.log(result.length);
-        if (result.length !== 0) {
-          res.send({
-            message: "duplicate",
-          });
-          console.log("In shops db shop name found");
-        } else {
-          res.send({
-            message: "No duplicates",
-          });
-          console.log("In shops db and no shop name found");
-        }
-      }
-    );
-  });
-
-  app.get("/getShopById/:userId", (req, res) => {
-    console.log("In get shop by id");
-    const userId = req.params.userId;
-    UserModel.find({_id:userId},(err, result) => {
-      if (err) {
-        res.send(err);
-        console.log(err);
-      } else {
-        console.log(result);
-        res.send({ success: true, result: result });
-      }
-    });
-  });
-
-  app.post("/createShop/:id", (req, res) => {
-    const shopName = req.body.shopName;
-    const id = req.params.id;
-    console.log(id)
-      UserModel.findByIdAndUpdate(_id,{shopName : shopName},(err, result) => {
-        if (err) {
-          console.log("in createshop")
-          console.log(err);
-        } else {
-          console.log(result);
-          // res.send(result);
-          res.send("Shops Value Inserted in user successfully");
-        }
-      }
-    );
-  });
-
-  // app.put ("/update", async (req, res) => {
-  //   const newFoodName = req.body.newFoodName;
-  //   const id = req.body.id;
-  //   try {
-  //    await FoodModel.findById(id, (err, updatedFood) => {
-  //       updatedFood. foodName = newFoodName;
-  //       updatedFood.save();
-  //       res.send ("update");
-  //    } catch (err) {
-  //     console. log(err);
-  // });
 
 
 

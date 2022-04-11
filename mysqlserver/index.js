@@ -305,22 +305,15 @@ app.post("/getAllProducts/:id", (req, res) => {
   if (term) {
     console.log("In term");
     db.query(
-      // SELECT * FROM test_schema.Items WHERE itemName LIKE "%Rice%" AND userId=1;
       `SELECT * FROM Items WHERE itemName LIKE "%${term}%" AND userId=? LIMIT  ?, ?`,
       [id, skip, limit],
       (err, result) => {
         if (err) {
-          // console.log(result + "result in db");
-
           res.send(err + "err");
           console.log(err);
         } else {
-          console.log("Out term");
-
-          console.log(result + "result");
-          res
-            .status(200)
-            .json({ success: true, result, postSize: result.length });
+          
+          res .status(200) .json({ success: true, result, postSize: result.length });
         }
       }
     );
@@ -509,7 +502,6 @@ app.put("/updateUser/:id", async (req, res) => {
       } else if (err) {
         return res.send(err);
       }
-
       const userId = req.params.id;
       const userName = req.body.userName;
       const gender = req.body.gender;
@@ -517,9 +509,6 @@ app.put("/updateUser/:id", async (req, res) => {
       const dob = req.body.dob;
       const userImage = req.file.filename;
       const about = req.body.about;
-
-      console.log(userImage);
-      console.log(userName);
       db.query(
         "UPDATE Users set name = ?, city  = ?, dob  = ?, gender  = ?, about  = ?, profilePic=? where id = ? ",
         [userName, city, dob, gender, about, userImage, userId],
@@ -711,34 +700,6 @@ app.get("/getPurchases/:UserId", (req, res) => {
   );
 });
 
-app.put("/updateItemById/:itemId", (req, res) => {
-  const id = req.params.itemId;
-  // const userId = req.params.id;
-  const itemName = req.body.itemName;
-  const itemDescriprion = req.body.itemDescription;
-  const itemPrice = req.body.itemPrice;
-  const itemCount = req.body.itemCount;
-  const itemCategory = req.body.itemCategory;
-
-  console.log("In update item post");
-  console.log(itemDescriprion);
-  console.log(itemName);
-  console.log(id);
-
-  db.query(
-    "UPDATE Items SET itemName=?, itemPrice=?, itemDescription=?, itemCount=?, itemCategory=? WHERE itemId=?",
-    [itemName, itemPrice, itemDescriprion, itemCount, itemCategory, id],
-    (err, result) => {
-      console.log(result.itemName);
-      if (err) {
-        console.log(err);
-        res.send(err);
-      } else {
-        res.send({ success: true, result });
-      }
-    }
-  );
-});
 
 const PORT = process.env.PORT || 4000;
 models.sequelize.sync().then(() => {

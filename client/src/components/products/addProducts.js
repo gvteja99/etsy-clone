@@ -29,6 +29,7 @@ function addProducts({ setShowProductsAddPage }) {
     } else {
       formData.append("itemCategory", itemCategory);
     }
+    console.log(itemCategory,formData.itemCategory)
  
 
     Axios.post("http://localhost:4000/addProduct/" + user.id, formData, {
@@ -37,7 +38,7 @@ function addProducts({ setShowProductsAddPage }) {
       console.warn(response);
       if (response.data.message === "success") {
         console.log("Image uploaded successfully");
-        // window.location.pathname = "/shopHome";
+        window.location.pathname = "/shopHome";
       }
     });
     setShowProductsAddPage(false);

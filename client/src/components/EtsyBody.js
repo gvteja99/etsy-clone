@@ -42,11 +42,12 @@ function EtsyBody() {
         dispatch(getAllItems(response.data.result));
 
         for (let i = 0; i < response.data.result.length; i++) {
-          // console.log(response.data.result[i].itemId);
+          console.log("bleh", response.data.result[i]._id);
+          console.log("items bleh" , items)
           const updateItems = [
             ...items,
             {
-              itemId: response.data.result[i].itemId,
+              
               userId: response.data.result[i].userId,
               itemName: response.data.result[i].itemName,
               itemCategory: response.data.result[i].itemCategory,
@@ -54,11 +55,14 @@ function EtsyBody() {
               itemDescription: response.data.result[i].itemDescription,
               itemCount: response.data.result[i].itemCount,
               itemImage: response.data.result[i].itemImage,
+              itemId: response.data.result[i]._id,
             },
           ];
+          console.log(updateItems.itemId)
+          console.log(updateItems.itemName)
           SetItems(updateItems);
           console.log("-------------geting all products----------------");
-          console.log(items);
+          console.log(items.itemId);
         }
       }
     });
@@ -80,11 +84,15 @@ function EtsyBody() {
 
   const handleFavourite = (itemId, userId) => {
     console.log("Favourites added" + itemId + userId);
+    console.log(itemId,"itemIdbleh")
     Axios.post("http://localhost:4000/addFavourite", {
+      
       itemId: itemId,
       userId: userId,
+      
     }).then((response) => {
       if (response.data.success === true) {
+        console.log()
         console.log(response.data.result);
         console.log("new fav added");
         // setFavoutriteIcon(true);
@@ -114,7 +122,7 @@ function EtsyBody() {
             }}
             className="favourite_icon"
             onClick={() => {
-              handleFavourite(pro.itemId, user.id);
+              handleFavourite(pro._id, user.id);
             }}
           >
   
