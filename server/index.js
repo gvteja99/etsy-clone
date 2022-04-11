@@ -389,6 +389,132 @@ app.put("/updateShopImageById/:id", (req, res) => {
   }
 });
 
+app.get("/getSearchItems/:searchValue", (req, res) => {
+
+  const searchValue = new RegExp("^"+req.params.searchValue);
+  console.log(searchValue);
+  ItemsModel.find( { itemName: {$regex: searchValue }},
+  
+    (err, result) => {
+      console.log(result);
+      if (err) {
+        res.send(err);
+      } else {
+        res.send({ success: true, result });
+      }
+    }
+  );
+});
+
+
+app.put("/updateUser/:id", async (req, res) => {
+  try {
+    let upload = multer({ storage: userStorage }).single("userImage");
+    upload(req, res, function (err) {
+      if (!req.file) {
+        return res.send("Please select an image to upload");
+      } else if (err instanceof multer.MulterError) {
+        return res.send(err);
+      } else if (err) {
+        return res.send(err);
+      }
+      const userId = req.params.id;
+      const userName = req.body.userName;
+      const gender = req.body.gender;
+      const city = req.body.city;
+      const dob = req.body.dob;
+      const userImage = req.file.filename;
+      const about = req.body.about;
+      UserModel.findByIdAndUpdate(id, {
+        userName:userName, city:city, dob:dob, gender:gender, about:about, userImage:userImage},
+        (err, result) => {
+          console.log(result);
+          if (err) {
+            console.log(err);
+            res.send({ message: "error" });
+          } else {
+            res.send({ message: "success", result });
+          }
+        }
+      );
+    });
+  } catch (err) {
+    console.log(err);
+  }
+});
+
+app.get("/getItems", (req, res) => {
+  console.log("Getting all products in home");
+  ItemsModel.find({}, (err, result) => {
+    console.log(result);
+    if (err) {
+      console.log(err);
+      res.send(err);
+    } else {
+      res.send({ success: true, result });
+    }
+  });
+});
+
+app.post("/addFavourite", (req, res) => {
+  const userId = req.body.userId;
+  console.log(userId);
+  const itemId = req.body.itemId;
+  const newFav = new FavouritesModel({
+      itemId: itemId, userId: userId
+    });
+    console.log(itemId,"itemId")
+
+     newFav.save({},
+    (err, result) => {
+      console.log(result);
+      if (err) {
+        console.log(err);
+        res.send(err);
+      } else {
+        res.send({ success: true, result });
+      }
+    }
+  );
+});
+
+app.get("/getFavourites/:id", async(req, res) => {
+  const userId = req.params.id;
+  console.log(userId);
+  console.log("Getting all Favourites in home");
+  try{
+    result = await FavouritesModel.find( {userId : userId}
+  ).populate("itemId");
+    console.log(result)
+
+    res.send({ success: true, result });
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+
+
+app.delete("/deleteFavourite/:itemId/:userId", (req, res) => {
+  const itemId = req.params.itemId;
+  const userId = req.params.userId;
+  console.log("Deleting Fav Item");
+  // db.query(
+  //   "delete FROM Favourites WHERE itemId =? and userId =? ",
+  //   [itemId, userId],
+    FavouritesModel.findOneAndRemove({itemId:itemId,userId:userId},
+
+    (err, result) => {
+      console.log(result);
+      if (err) {
+        console.log(err);
+        res.send(err);
+      } else {
+        res.send({ success: true, result });
+      }
+    }
+  );
+});
 
 const PORT = process.env.PORT || 4000;
 
