@@ -477,7 +477,30 @@ app.post("/addFavourite", (req, res) => {
     }
   );
 });
+app.post("/addCart", (req, res) => {
+  const userId = req.body.userId;
+  console.log(userId);
+  const itemId = req.body.itemId;
+  const qty = req.body.qty;
+  //const purchase = 0;
+  const newFav = new CartModel({
+      itemId: itemId, userId: userId, qty: qty
+    });
+    console.log(itemId,"itemId")
+    console.log("qty",qty)
 
+     newFav.save({},
+    (err, result) => {
+      console.log(result);
+      if (err) {
+        console.log(err);
+        res.send(err);
+      } else {
+        res.send({ success: true, result });
+      }
+    }
+  );
+});
 app.get("/getFavourites/:id", async(req, res) => {
   const userId = req.params.id;
   console.log(userId);
@@ -494,14 +517,28 @@ app.get("/getFavourites/:id", async(req, res) => {
   }
 });
 
+app.get("/getCart/:id", async(req, res) => {
+  const userId = req.params.id;
+  console.log(userId);
+  console.log("Getting all carttimes in home");
+  try{
+    result = await CartModel.find( {userId : userId}
+  ).populate("itemId");
+    console.log("cart", result)
+
+    res.send({ success: true, result });
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+
 
 app.delete("/deleteFavourite/:itemId/:userId", (req, res) => {
   const itemId = req.params.itemId;
   const userId = req.params.userId;
   console.log("Deleting Fav Item");
-  // db.query(
-  //   "delete FROM Favourites WHERE itemId =? and userId =? ",
-  //   [itemId, userId],
+
     FavouritesModel.findOneAndRemove({itemId:itemId,userId:userId},
 
     (err, result) => {
@@ -513,6 +550,44 @@ app.delete("/deleteFavourite/:itemId/:userId", (req, res) => {
         res.send({ success: true, result });
       }
     }
+  );
+});
+
+app.delete("/deleteCart/:cartId", (req, res) => {
+  const cartId = req.params.cartId;
+  console.log("Deleting cart Item");
+
+  CartModel.findByIdAndDelete(cartId,
+
+    (err, result) => {
+      console.log(result);
+      if (err) {
+        console.log(err);
+        res.send(err);
+      } else {
+        res.send({ success: true, result });
+        console.log("delete update")
+      }
+    }
+  );
+});
+
+app.post("/updateQty/:id/:qty", (req, res) => {
+  
+  const id = req.params.id;
+  const qty = req.params.qty;
+  console.log("updating qty")
+  CartModel.findByIdAndUpdate(id, { qty: qty }, (err, result) => {
+    if (err) {
+      console.log("couldnt update")
+      console.log(err);
+    } else {
+      console.log(result);
+      // res.send(result);
+      res.send("Qty updated");
+      console.log("qty update")
+    }
+  }
   );
 });
 

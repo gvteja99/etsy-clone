@@ -1,16 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Cart.css";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import CartItem from "./CartItem";
 import Axios from "axios";
-
-
-import {
-  createCartItem,
-  createFinalCart,
-  getCartItems,
-} from "../features/cartItemsSlice";
+import {  createCartItem, getCartItems, } from "../features/cartItemsSlice";
 import { selectUser } from "../features/userSlice";
 import Navbar from "./Navbar";
 import Hoverbar from "./Hoverbar";
@@ -19,49 +13,55 @@ const CartScreen = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
   const [finalAmount, setFinalAmount] = useState();
-
-  // const cart = useSelector((state) => state.cart);
-  // const { cartItems } = cart;
   const finalCartProducts = useSelector(getCartItems);
+  const [items, SetItems] = useState([]);
+  const products = useSelector(getCartItems);
 
-  // useEffect(() => {}, []);
+  useEffect(() => {
+    getCItems();
+  }, []);
+
+  const getCItems = () => {
+    Axios.get("http://localhost:4000/getCart/" + user.id).then(
+      (response) => {
+        console.log(response.data.result);
+        dispatch(createCartItem(response.data.result));
+        if (response.data.success === true) {
+ } } ); };
 
   const removeFromCartHandler = (id) => {
     // dispatch(removeFromCart(id));
   };
 
   const getCartCount = () => {
-    return finalCartProducts.reduce((qty, item) => Number(item.qty) + qty, 0);
+    return products.reduce((qty, item) => Number(item.qty) + qty, 0);
   };
 
   const getCartSubTotal = () => {
-    return finalCartProducts
-      .reduce((price, item) => price + item.itemPrice * item.qty, 0) .toFixed(2);
-
-    // setFinalAmount(finalPrice);
-    // return finalPrice;
+    return products
+      .reduce((price, item) => price + item.itemId.itemPrice * item.qty, 0) .toFixed(2);
   };
 
+  
   const handleCheckOut = () => {
-    console.log(JSON.stringify(finalCartProducts));
 
-    localStorage.setItem("purchase", JSON.stringify(finalCartProducts));
+
+    // Axios.post("http://localhost:4000/purchase/" + user.id )
+    //     .then((response) => {
+    //       console.log("Qty updated");
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //     });
+        
+    console.log(JSON.stringify(items));
+
+    localStorage.setItem("purchase", JSON.stringify(items));
     window.location.pathname = "/purchase";
-
-    // Axios.post("http://localhost:4000/addCartProduct/" + user.id, {
-    //   items: JSON.stringify(finalCartProducts),
-    //   orderId: Math.floor(Math.random() * 1000),
-    //   price: getCartSubTotal(),
-    // }).then((response) => {
-    //   if (response.data.success === true) {
-    //     console.log("item create in cart");
-    //
-    //   }
-    // });
-    // window.localStorage("purchase" + user.id, {});
   };
 
   return (
+
     <>
       <Navbar />
       <Hoverbar />
@@ -69,13 +69,9 @@ const CartScreen = () => {
       <div className="cartscreen">
         <div className="cartscreen__left">
           <h2>Shopping Cart</h2>
-
-          {finalCartProducts.length === 0 ? (
-            <div>
-              Your Cart Is Empty <Link to="/">Go Back</Link>
-            </div>
-          ) : (
-            finalCartProducts.map((item) => (
+          <h3>{products.length}</h3>
+          {products.length === 0 ? ( <div> Your Cart Is Empty <Link to="/">Go Back</Link> </div> ) : (
+            products.map((item) => (
               <CartItem
                 key={item.product}
                 item={item}
@@ -96,11 +92,6 @@ const CartScreen = () => {
             <button
               onClick={() => {
                 handleCheckOut();
-                // item.itemId,
-                // item.itemImage,
-                // item.itemName,
-                // item.itemPrice,
-                // item.qty
               }}
             >
               Proceed To Checkout

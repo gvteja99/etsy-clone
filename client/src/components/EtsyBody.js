@@ -1,34 +1,25 @@
 import Axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  favouritesList,
-  getAllFavourites,
-  getAllItems,
-  getAllProducts,
-  getProducts,
-  updateFavourites,
-} from "../features/productsSlice";
+import { favouritesList, getAllItems, getAllProducts, getProducts, updateFavourites, } from "../features/productsSlice";
 import FavoriteTwoToneIcon from "@mui/icons-material/FavoriteTwoTone";
 // import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 import { selectUser } from "../features/userSlice";
-import { Link } from "react-router-dom";
+
 import { productOverview } from "../features/cartSlice";
-import ProductOverView from "./ProductOverView";
+
+
 
 function EtsyBody() {
   const dispatch = useDispatch();
-  // const [products, setProducts] = useState([]);
   const products = useSelector(getAllProducts);
   const user = useSelector(selectUser);
-  // const favourites = useSelector(getAllFavourites);
-  // const product = useSelector(getProducts);
-  // const getAllItemsFromItems = useSelector(getAllItems);
+  
   const [favourites, setFavourites] = useState([]);
   const [items, SetItems] = useState([]);
   const [favouriteIcon, setFavoutriteIcon] = useState(false);
-  // const [productOverview, setProductOverview] = useState(false);
+
 
   useEffect(() => {
     getItems();
@@ -101,11 +92,7 @@ function EtsyBody() {
   };
 
   const handleOpenImage = (pro) => {
-    // console.log(pro.itemId);
-    // console.log(pro.itemImage);
     dispatch(productOverview(pro));
-    // console.log(pro.itemCount);
-    // setProductOverview(true);
     window.location.pathname = "/productOverview";
   };
 

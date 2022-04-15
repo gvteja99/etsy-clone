@@ -8,19 +8,23 @@ export const cartItemsSlice = createSlice({
   },
   reducers: {
     // by id
-    createCartItem: (state, action) => {
-      const exist = state.cartItems.findIndex(
-        (ele) => ele.itemId === action.payload.itemId
-      );
-      console.log(exist + "----------------------------: exist");
-      if (exist !== -1) {
-        state.cartItems[exist] = {
-          ...state.cartItems[exist],
-          ...action.payload,
-        };
-      } else {
-        state.cartItems.push(action.payload);
-      }
+    createCartItem: (state, action) => 
+    // {
+    //   const exist = state.cartItems.findIndex(
+    //     (ele) => ele.itemId === action.payload.itemId
+    //   );
+    //   console.log(exist + "----------------------------: exist");
+    //   if (exist !== -1) {
+    //     state.cartItems[exist] = {
+    //       ...state.cartItems[exist],
+    //       ...action.payload,
+    //     };
+    //   } else {
+    //     state.cartItems.push(action.payload);
+    //   }
+    // },
+    {
+      state.cartItems = action.payload;
     },
     removeCartItem: (state, action) => {
       console.log("----------------------------: deleted" + action.payload);

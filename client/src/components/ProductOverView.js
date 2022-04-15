@@ -2,13 +2,7 @@ import Axios from "axios";
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createCartItem } from "../features/cartItemsSlice";
-import {
-  addProductToCart,
-  addQtyToCart,
-  getAllCartProducts,
-  getFinalCartProducts,
-  productOverview,
-} from "../features/cartSlice";
+import { addProductToCart, addQtyToCart, getAllCartProducts, getFinalCartProducts, productOverview, } from "../features/cartSlice";
 import userSlice, { selectUser } from "../features/userSlice";
 import Hoverbar from "./Hoverbar";
 import Navbar from "./Navbar";
@@ -23,11 +17,23 @@ function ProductOverView() {
   // const cartProduct = useSelector(getAllCartProducts);
   // const cartItems = useSelector(getCartItems);
 
-  const addToCartHandler = () => {
+  const addToCartHandler = (itemId, userId) => {
     console.log("add to cart handler");
+    console.log("Items added to Cart" + itemId + userId);
+    Axios.post("http://localhost:4000/addCart", {
+      
+      itemId: itemId,
+      userId: userId,
+      qty: Number(qty)
+      
+    }).then((response) => {
+      if (response.data.success === true) {
+        console.log(response.data.result);
+        console.log("new cart item added");
+      }
+    });
 
-    // cartItems.map((ele) => console.log(ele));
-    // if (cartItems) {
+ 
     dispatch(
       createCartItem({
         itemId: productView.itemId,
@@ -40,31 +46,7 @@ function ProductOverView() {
         qty: Number(qty),
       })
     );
-    // }
 
-    // if (cartItems) {
-    //   console.log(cartItems.qty);
-    //   console.log(qty);
-    // } else {
-    //   console.log("No cart items");
-    // }
-    // console.log(productView.length);
-    // if (user !== null) {
-    //   Axios.post("http://localhost:4000/addProductToCart/" + user.id, {
-    // itemId: cartProduct.itemId,
-    // itemName: cartProduct.itemName,
-    // itemDescription: cartProduct.itemDescription,
-    // itemImage: cartProduct.itemImage,
-    // itemPrice: cartProduct.itemPrice,
-    // itemId: cartProduct.itemId,
-    // qty: qty,
-    //   }).then((response) => {
-    //     if (response.data.success === true) {
-    //       console.log("-------------responce data ------", response.data);
-    //     }
-    //   });
-    //   console.log("Add to cart clicked");
-    // }
   };
   return (
     <>
@@ -113,7 +95,9 @@ function ProductOverView() {
               </select>
             </p>
             <p>
-              <button type="button" onClick={addToCartHandler}>
+              <button type="button" onClick={() => {
+                addToCartHandler(productView._id, user.id);}}>
+                
                 Add To Cart
               </button>
             </p>

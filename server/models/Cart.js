@@ -10,7 +10,12 @@ const CartSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users"
   },
-  
+  qty: {
+    type: Number
+  },
+  // purchase: {
+  //   type: Number
+  // }
 });
 
 const CartModel = mongoose.model("cart", CartSchema);
