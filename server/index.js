@@ -477,14 +477,16 @@ app.post("/addFavourite", (req, res) => {
     }
   );
 });
+
+
 app.post("/addCart", (req, res) => {
   const userId = req.body.userId;
   console.log(userId);
   const itemId = req.body.itemId;
   const qty = req.body.qty;
-  //const purchase = 0;
+  const purchase = 0;
   const newFav = new CartModel({
-      itemId: itemId, userId: userId, qty: qty
+      itemId: itemId, userId: userId, qty: qty, purchase: purchase
     });
     console.log(itemId,"itemId")
     console.log("qty",qty)
@@ -522,7 +524,7 @@ app.get("/getCart/:id", async(req, res) => {
   console.log(userId);
   console.log("Getting all carttimes in home");
   try{
-    result = await CartModel.find( {userId : userId}
+    result = await CartModel.find( {userId : userId, purchase : 0}
   ).populate("itemId");
     console.log("cart", result)
 
@@ -589,6 +591,43 @@ app.post("/updateQty/:id/:qty", (req, res) => {
     }
   }
   );
+});
+
+
+
+app.get("/purchase/:id", (req, res) => {
+  
+    const id = req.params.id;
+    
+    console.log("updating purchase")
+    CartModel.updateMany({  userId: id}, {$set: { purchase: 1 }},  (err, result) => {
+      if (err) {
+        console.log("couldnt update")
+        console.log(err);
+      } else {
+        console.log(result);
+        // res.send(result);
+        res.send("purchase updated");
+        console.log("qty update")
+      }
+    }
+    );
+});
+
+app.get("/getPurchases/:id", async(req, res) => {
+  const userId = req.params.id;
+  console.log(userId);
+  console.log("Getting all purchases in home");
+  try{
+    result = await CartModel.find( {userId : userId, purchase : 1}
+  ).populate("itemId");
+    console.log("cart", result)
+
+    res.send({ success: true, result });
+  } catch (err) {
+    console.log(err);
+    res.send(err);
+  }
 });
 
 const PORT = process.env.PORT || 4000;

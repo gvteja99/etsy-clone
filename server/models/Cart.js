@@ -13,10 +13,13 @@ const CartSchema = new mongoose.Schema({
   qty: {
     type: Number
   },
-  // purchase: {
-  //   type: Number
-  // }
-});
+  purchase: {
+    type: Number
+  }
+}, {
+  timestamps: true}
+
+);
 
 const CartModel = mongoose.model("cart", CartSchema);
 module.exports = CartModel;

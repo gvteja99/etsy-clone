@@ -1,148 +1,100 @@
-// import Axios from "axios";
-// import React, { useEffect, useState } from "react";
-// import { useSelector } from "react-redux";
-// import { getFinalCart } from "../features/cartItemsSlice";
-// import { selectUser } from "../features/userSlice";
-// import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
-// import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
-// import Navbar from "./Navbar";
-// import Hoverbar from "./Hoverbar";
-// import cookie from "react-cookies";
-// import Pagination from "./Pagination";
+import React, { useEffect, useState } from "react";
+import "./Cart.css";
+import { useSelector, useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
+import CartItem from "./CartItem";
+import Axios from "axios";
+import { createCart, getCart, } from "../features/purchaseSlice";
+import { selectUser } from "../features/userSlice";
+import Navbar from "./Navbar";
+import Hoverbar from "./Hoverbar";
+import "./CartItem.css";
 
-// function Purchases() {
-//   const user = useSelector(selectUser);
-//   const [purchasedProducts, setPurchasedProducts] = useState([]);
-//   // const [purchasedProducts, setPurchasedProducts] = useState([]);
-//   const [loading, setLoading] = useState(false);
-//   const [currentPage, setCurrentPage] = useState(1);
-//   const [itemsPerPage, setItemsPerPage] = useState(5);
 
-//   useEffect(() => {
-//     getPurchasedItems();
-//   }, []);
-//   //Get current posts
-//   const indexOfLastItem = currentPage * itemsPerPage;
-//   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-//   const currentPurchasedItems = purchasedProducts.slice(
-//     indexOfFirstItem,
-//     indexOfLastItem
-//   );
+const Purchases = () => {
+    const dispatch = useDispatch();
+    const user = useSelector(selectUser);
+    const [finalAmount, setFinalAmount] = useState();
 
-//   const getPurchasedItems = () => {
-//     Axios.get(
-//       "http://localhost:4000/api/products/getPurchasedItems/" + user.id
-//     ).then((response) => {
-//       if (response.data.success === true) {
-//         console.log("----------------Purchased products-------------------");
-//         console.log(response.data.result);
-//         //   setPurchasedProducts(response.data.result);
-//         setPurchasedProducts([...purchasedProducts, ...response.data.result]);
+    const [items, SetItems] = useState([]);
+    const products = useSelector(getCart);
 
-//         // setPurchasedProducts(response.data.result[0].items);
-//       }
-//     });
-//   };
+    useEffect(() => { getCItems(); }, []);
 
-//   let renderFavourites = null;
+    const getCItems = () => {
+        Axios.get("http://localhost:4000/getPurchases/" + user.id).then(
+            (response) => {
+                console.log(response.data.result);
+                dispatch(createCart(response.data.result));
+                if (response.data.success === true) {
+                }
+            });
+    };
 
-//   // const purchasedProducts = JSON.parse(localStorage.getItem("purchase"));
+    const getCartCount = () => {
+        return products.reduce((qty, item) => Number(item.qty) + qty, 0);
+    };
 
-//   if (purchasedProducts.length === 0) {
-//     renderFavourites = () => {
-//       return <div>No Purchases till now...</div>;
-//     };
-//   } else {
-//     renderFavourites = currentPurchasedItems.map((pro) => {
-//       return (
-//         <div className="home_cards mb-4">
-//           <div className="home_card card">
-//             <div
-//               className="purchase_item_header"
-//               style={{ backgroundColor: "rgb(197, 197, 197)" }}
-//             >
-//               <p className="purchase_item_price">Item Price ${pro.itemPrice}</p>
-//               <p className="purchase_item_price">
-//                 Ship To {cookie.load("user")}
-//               </p>
-//               <p style={{ width: "70%" }} className="purchase_item_price">
-//                 Order Id #{pro._id}
-//               </p>
-//             </div>
+    const getCartSubTotal = () => {
+        return products
+            .reduce((price, item) => price + item.itemId.itemPrice * item.qty, 0).toFixed(2);
+    };
 
-//             <hr style={{ marginTop: "-2px" }}></hr>
-//             <div className="item">
-//               <img src={pro.itemImage} className="card-img-left" alt="..." />
+    const handleCheckOut = () => {
+        Axios.get("http://localhost:4000/purchase/" + user.id)
+            .then((response) => {
+                console.log("Purchased");
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+    };
+    return (
+        <>
+            <Navbar />
+            <Hoverbar />
+            <hr></hr>
+            <div className="cartscreen">
+                <div className="cartscreen__left">
+                    <h2>Previous Purchases</h2>
+                    {products.length === 0 ? (<div> You have no previous purchases. <Link to="/">Go Back</Link> </div>) : (
+                        products.map((item) => (
+                            //   <CartItem
+                            //     key={item.product}
+                            //     item={item}
+                            //     getCartSubTotal={getCartSubTotal}
+                            //     getCartCount={getCartCount}
 
-//               <div style={{ marginLeft: "10px" }} className="item-details">
-//                 <h5 className="card-title">{pro.itemName}</h5>
-//                 <p className="card-text">{pro.itemDescription}</p>
-//                 {pro.giftMessage !== "" ? (
-//                   <p className="card-text">Gift Message: {pro.giftMessage}</p>
-//                 ) : (
-//                   <p className="card-text"></p>
-//                 )}
+                            //   />
+                            <div className="cart_pag" style={{ display: "flex", width: "100%", height: "200px", }} >
+                                <div className="cartitem">
+                                <p className="cartitem__price">Order Number: {item._id}</p>
+                                <p className="cartitem__price">Purchased On: {item.updatedAt}</p>
+                                <Link to={`/product/${item.product}`} className="cartItem__name">
+                                        <p>{item.itemId.itemName}</p>
+                                    </Link>
+                                    <div className="cartitem__image">
+                                        <img src={"/Images/" + item.itemId.itemImage} alt={item.itemId.itemName} width={150} height={100} />
+                                    </div>
+                                    
+                                    <p className="cartitem__price">${item.itemId.itemPrice}</p>
+                                    
+                                    {/* <select value={item.qty} onChange={(e) => qtyChangeHandler(e.target.value)} className="cartItem__select" >
+                                        {[...Array(item.itemId.itemCount).keys()].map((x) => (
+                                            <option key={x + 1} value={x + 1}>
+                                                {x + 1}
+                                            </option>
+                                        ))}
+                                    </select> */}
+                                    {/* <button className="cartItem__deleteBtn" onClick={() => removeHandler(item._id)} > <Delete /> </button> */}
+                                </div>
+                            </div>
+                        ))
+                    )}
+                </div>
+            </div>
+        </>
+    );
+};
 
-//                 {/* <button className="btn-sm btn-dark">Edit</button> */}
-//               </div>
-//             </div>
-//           </div>
-//         </div>
-//       );
-//     });
-//   }
-
-//   //change page
-//   const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-//   // const setItemsInPage = (itemsCount) => {
-//   //   localStorage.setItem("itemsPerPage", itemsCount);
-//   //   setItemsPerPage(localStorage.getItem("itemsPerPage"));
-//   // };
-
-//   return (
-//     <>
-//       <Navbar />
-//       <Hoverbar />
-//       <hr></hr>
-//       <div className="purchases_header">
-//         <h2 style={{ marginLeft: "110px" }}>Purchases Page</h2>
-//         <div style={{ width: "20%" }}>
-//           <label htmlFor="itemsPerPage" style={{ marginRight: "10px" }}>
-//             Items per page
-//           </label>
-//           <select
-//             style={{ width: "25%", height: "30px", marginTop: "5px" }}
-//             onChange={(e) => {
-//               setItemsPerPage(e.target.value);
-//             }}
-//             id="itemsPerPage"
-//           >
-//             <option></option>
-//             <option value="2"> 2 </option>
-//             <option value="5" selected>
-//               5
-//             </option>
-//             <option value="10"> 10 </option>
-//           </select>
-//         </div>
-//       </div>
-//       <div className="profile_favourites">
-//         <div className="container-fluid mx-1">
-//           <div className="row mt-5 mx-1">
-//             <div className="col-md-9">
-//               <div className="row"> {renderFavourites} </div>
-//               <Pagination
-//                 itemsPerPage={itemsPerPage}
-//                 totalItems={purchasedProducts.length}
-//                 paginate={paginate}
-//               />
-//             </div>
-//           </div>
-//         </div>
-//       </div>
-//     </>
-//   );
-// }
-
-// export default Purchases;
+export default Purchases;
