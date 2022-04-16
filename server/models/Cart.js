@@ -15,6 +15,9 @@ const CartSchema = new mongoose.Schema({
   },
   purchase: {
     type: Number
+  },
+  gift:{
+    type: String
   }
 }, {
   timestamps: true}

@@ -593,6 +593,25 @@ app.post("/updateQty/:id/:qty", (req, res) => {
   );
 });
 
+app.post("/giftMessage/:id/", (req, res) => {
+  
+  const id = req.params.id;
+  const gift = req.body.qty;
+  console.log("updating gift")
+  CartModel.findByIdAndUpdate(id, { gift: gift }, (err, result) => {
+    if (err) {
+      console.log("couldnt update")
+      console.log(err);
+    } else {
+      console.log(result);
+      // res.send(result);
+      res.send("Qty updated");
+      console.log("qty update")
+    }
+  }
+  );
+});
+
 
 
 app.get("/purchase/:id", (req, res) => {
@@ -611,6 +630,7 @@ app.get("/purchase/:id", (req, res) => {
         console.log("qty update")
       }
     }
+
     );
 });
 

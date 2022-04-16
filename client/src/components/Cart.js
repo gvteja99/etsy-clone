@@ -54,7 +54,7 @@ const CartScreen = () => {
       <div className="cartscreen">
         <div className="cartscreen__left">
           <h2>Shopping Cart</h2>
-          <h3>{products.length}</h3>
+          
           {products.length === 0 ? ( <div> Your Cart Is Empty <Link to="/">Go Back</Link> </div> ) : (
             products.map((item) => (
               <CartItem

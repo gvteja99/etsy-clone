@@ -1,6 +1,6 @@
 import "./CartItem.css";
 import { Link } from "react-router-dom";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { createFinalCart, removeCartItem } from "../features/cartItemsSlice";
 import { Delete } from "@material-ui/icons";
@@ -9,37 +9,57 @@ import { selectUser } from "../features/userSlice";
 
 const CartItem = ({ item }) => {
   const dispatch = useDispatch();
+  const [gift, SetGift] = useState(false);
+ 
 
   const qtyChangeHandler = (qty) => {
 
     console.log("qtyChangeHandler");
 
     Axios.post("http://localhost:4000/updateQty/" + item._id + "/" + qty)
-        .then((response) => {
-          console.log("Qty updated");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((response) => {
+        console.log("Qty updated");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
-        window.location.pathname = "/cart";
-    
+    window.location.pathname = "/cart";
+  };
+
+  const giftMessageHandler = (qty) => {
+
+    console.log("giftMessageHandler");
+
+    Axios.post("http://localhost:4000/giftMessage/" + item._id, {qty} )
+      .then((response) => {
+        console.log("gift messsage updated");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+
+    // window.location.pathname = "/cart";
   };
 
   const removeHandler = (id) => {
     console.log("remove");
     dispatch(removeCartItem(id));
     Axios.delete("http://localhost:4000/deleteCart/" + id)
-        .then((response) => {
-          console.log("cart updated");
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      .then((response) => {
+        console.log("cart updated");
+      })
+      .catch((err) => {
+        console.log(err);
+      });
 
-        window.location.pathname = "/cart";
-   
+    window.location.pathname = "/cart";
+
   };
+
+  const giftHandler = (gift) => {
+    SetGift(true);
+  }
 
   return (
     <div className="cart_pag" style={{ display: "flex", width: "100%", height: "200px", }} >
@@ -59,6 +79,21 @@ const CartItem = ({ item }) => {
           ))}
         </select>
         <button className="cartItem__deleteBtn" onClick={() => removeHandler(item._id)} > <Delete /> </button>
+        <div>
+          <input
+            type="checkbox"
+            name="checkbox"
+            id="checkbox"
+            checked={gift}
+            value={gift}
+            onChange={e => {
+              giftHandler(e.target.value);
+            }}
+          />
+          <label for="checkbox"> Gift Card</label>
+          {gift && (<div> <input type="gift" id="gift" placeholder="gift message" onChange={(event) => { giftMessageHandler(event.target.value); }} required /></div>
+      )}
+        </div>
       </div>
     </div>
   );
