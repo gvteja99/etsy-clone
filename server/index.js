@@ -12,8 +12,15 @@ const UserModel = require("./models/Users");
 const ItemsModel = require("./models/Items");
 const FavouritesModel = require("./models/Favourites");
 const CartModel = require("./models/Cart");
+const aws = require('aws-sdk');
+const multerS3 = require('multer-s3');
 
 const app = express();
+
+const s3 = new aws.S3({
+  secretAccessKey: 'JGPbrFETWLo+Hi1JRjaub7N/V52k18d+CY6UYqJL',
+  accessKeyId: 'AKIAZBBXTE4RNICSOFPC',
+});
 
 app.use(
   cors({
@@ -42,6 +49,7 @@ app.use(
     },
   })
 );
+
 
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
@@ -108,6 +116,8 @@ const upload = multer({
   },
 }).single("itemImage");
 
+
+
 //static images folder
 app.use("/Images", express.static("./Images"));
 
@@ -122,7 +132,7 @@ app.post("/register", async (req, res) => {
     fullAddress: null, city: null, phoneNumber: null, dob: null, gender: null, profilePic: null,
     about: null, shopName: null, shopImage: null
   });
-   newUser.save({}, (err, result) => {
+  newUser.save({}, (err, result) => {
     if (err) {
       console.log("err", err);
       res.json(err);
@@ -229,48 +239,60 @@ app.post("/createShop/:id", (req, res) => {
   );
 });
 
-app.post("/addProduct/:id", async (req, res) => {
-  try {
-    let upload = multer({ storage: storage }).single("itemImage");
-    upload(req, res, function (err) {
-      if (!req.file) {
-        return res.send("Please select an image to upload");
-      } else if (err instanceof multer.MulterError) {
-        return res.send(err);
-      } else if (err) {
-        return res.send(err);
-      }
 
+const uploadS3 = (bucketName) =>
+  multer({
+    storage: multerS3({
+      s3,
+      bucket: bucketName,
 
-      const userId = req.params.id;
-      const itemName = req.body.itemName;
-      const itemDescription = req.body.itemDescription;
-      const itemPrice = req.body.itemPrice;
-      const itemCount = req.body.itemCount;
-      const itemImage = req.file.filename;
-      const itemCategory = req.body.itemCategory;
-
-      const newItem = new ItemsModel({userId,
-        itemName: itemName, itemDescription: itemDescription, itemPrice: itemPrice,
-        itemCount: itemCount, itemImage: itemImage, itemCategory: itemCategory
-      });
-      newItem.save();
-      res.send({ message: "success" })
-      //   {},
-      //   (err, result) => {
-      //     if (err) {
-      //       console.log(err);
-      //       res.send({ message: "error" });
-      //     } else {
-      //       res.send({ message: "success" });
-      //     }
-      //   }
-      // );
-    });
-  } catch (err) {
-    console.log(err);
-  }
+      metadata: function (req, file, cb) {
+        cb(null, { fieldName: file.fieldname });
+      },
+      key: function (req, file, cb) {
+        cb(null, `Product-${Date.now()}.jpeg`);
+      },
+    }),
 });
+
+
+app.post("/addProduct/:id", (req, res) => {
+  console.log("In add products");
+  const userId = req.params.id;
+
+  const uploadSingle = uploadS3("etsyclonebucket").single("itemImage");
+
+  uploadSingle(req, res, async (err) => {
+    if (err) {
+      console.log(err)
+      return res.status(400).json({ message: err.message });}
+    
+
+    const userId = req.params.id;
+    const itemName = req.body.itemName;
+    const itemCategory = req.body.itemCategory;
+    const itemDescription = req.body.itemDescription;
+    const itemPrice = req.body.itemPrice;
+    const itemCount = req.body.itemCount;
+    const itemImage = req.file.location;
+
+    const newItem = new ItemsModel({
+      userId:userId,
+      itemName: itemName, itemDescription: itemDescription, itemPrice: itemPrice,
+      itemCount: itemCount, itemImage: itemImage, itemCategory: itemCategory
+    });
+    newItem.save()
+      .then((data) => {
+        console.log("Product added successfully");
+        res.send(data);
+      })
+      .catch((err) => {
+        console.log(err);
+        res.status(500).send({ message: "some error occured" });
+      });
+  });
+});
+
 
 app.post("/getAllProducts/:id", (req, res) => {
   const id = req.params.id;
@@ -279,7 +301,7 @@ app.post("/getAllProducts/:id", (req, res) => {
   const term = req.body.searchTerm;
   if (term) {
     console.log("In term");
-      result = ItemsModel.find( { "itemName": {$regex: "/^" + term+ "/", $options: 'i' }},
+    result = ItemsModel.find({ "itemName": { $regex: "/^" + term + "/", $options: 'i' } },
       (err, result) => {
         if (err) {
           res.send(err + "err");
@@ -291,7 +313,7 @@ app.post("/getAllProducts/:id", (req, res) => {
     ).skip(skip).limit(limit);
     res.status(200).json({ success: true, result, postSize: result.length });
   } else {
-      ItemsModel.find({},
+    ItemsModel.find({},
       (err, result) => {
         console.log(result.length + "result in db");
         if (err) {
@@ -299,7 +321,7 @@ app.post("/getAllProducts/:id", (req, res) => {
           res.send(err + "err");
         } else {
           console.log(result + "result");
-          res .status(200) .json({ success: true, result, postSize: result.length });
+          res.status(200).json({ success: true, result, postSize: result.length });
         }
       }
     );
@@ -308,15 +330,15 @@ app.post("/getAllProducts/:id", (req, res) => {
 
 app.get("/getItemById/:itemId", (req, res) => {
   const id = req.params.itemId;
-  ItemsModel.find({_id : id},
-  (err, result) => {
-    console.log(result);
-    if (err) {
-      res.send(err);
-    } else {
-      res.send(result);
-    }
-  });
+  ItemsModel.find({ _id: id },
+    (err, result) => {
+      console.log(result);
+      if (err) {
+        res.send(err);
+      } else {
+        res.send(result);
+      }
+    });
 });
 
 app.get("/getAllItems", (req, res) => {
@@ -343,9 +365,11 @@ app.put("/updateItemById/:itemId", (req, res) => {
   console.log(itemName);
   console.log(id);
 
-  UserModel.findByIdAndUpdate(id, { itemName: itemName, 
-    itemPrice : itemPrice, itemDescription : itemDescription, itemCount : itemCount,
-     itemCategory :itemCategory},
+  UserModel.findByIdAndUpdate(id, {
+    itemName: itemName,
+    itemPrice: itemPrice, itemDescription: itemDescription, itemCount: itemCount,
+    itemCategory: itemCategory
+  },
     (err, result) => {
       console.log(result.itemName);
       if (err) {
@@ -360,20 +384,17 @@ app.put("/updateItemById/:itemId", (req, res) => {
 
 app.put("/updateShopImageById/:id", (req, res) => {
   console.log("In edit shop details put method");
-  try {
-    let upload = multer({ storage: shopStorage }).single("shopImage");
-    upload(req, res, function (err) {
-      if (!req.file) {
-        return res.send("Please select an image to upload");
-      } else if (err instanceof multer.MulterError) {
-        return res.send(err);
-      } else if (err) {
-        return res.send(err);
-      }
+  const uploadSingle = uploadS3("etsyclonebucket").single("shopImage");
+    uploadSingle(req, res, async (err) => {
+      if (err) {
+        console.log(err)
+        return res.status(400).json({ message: err.message });}
+
       const userId = req.params.id;
-      const shopImage = req.file.filename;
-  
-      UserModel.findByIdAndUpdate(id, {shopImage:shopImage},
+      const shopImage = req.file.location;
+      
+
+      UserModel.findByIdAndUpdate(userId, { shopImage: shopImage },
         (err, result) => {
           if (err) {
             console.log(err + "err");
@@ -384,17 +405,14 @@ app.put("/updateShopImageById/:id", (req, res) => {
         }
       );
     });
-  } catch (err) {
-    console.log(err);
-  }
 });
 
 app.get("/getSearchItems/:searchValue", (req, res) => {
 
-  const searchValue = new RegExp("^"+req.params.searchValue);
+  const searchValue = new RegExp("^" + req.params.searchValue);
   console.log(searchValue);
-  ItemsModel.find( { itemName: {$regex: searchValue }},
-  
+  ItemsModel.find({ itemName: { $regex: searchValue } },
+
     (err, result) => {
       console.log(result);
       if (err) {
@@ -408,25 +426,22 @@ app.get("/getSearchItems/:searchValue", (req, res) => {
 
 
 app.put("/updateUser/:id", async (req, res) => {
-  try {
-    let upload = multer({ storage: userStorage }).single("userImage");
-    upload(req, res, function (err) {
-      if (!req.file) {
-        return res.send("Please select an image to upload");
-      } else if (err instanceof multer.MulterError) {
-        return res.send(err);
-      } else if (err) {
-        return res.send(err);
-      }
+    const uploadSingle = uploadS3("etsyclonebucket").single("userImage");
+    uploadSingle(req, res, async (err) => {
+      if (err) {
+        console.log(err)
+        return res.status(400).json({ message: err.message });}
+
       const userId = req.params.id;
       const userName = req.body.userName;
       const gender = req.body.gender;
       const city = req.body.city;
-      const dob = req.body.dob;
-      const userImage = req.file.filename;
+      // const dob = req.body.dob;
+      const userImage = req.file.location;
       const about = req.body.about;
-      UserModel.findByIdAndUpdate(id, {
-        userName:userName, city:city, dob:dob, gender:gender, about:about, userImage:userImage},
+      UserModel.findByIdAndUpdate(userId, {
+        userName: userName, city: city, gender: gender, about: about, profilePic: userImage
+      },
         (err, result) => {
           console.log(result);
           if (err) {
@@ -438,9 +453,6 @@ app.put("/updateUser/:id", async (req, res) => {
         }
       );
     });
-  } catch (err) {
-    console.log(err);
-  }
 });
 
 app.get("/getItems", (req, res) => {
@@ -461,11 +473,11 @@ app.post("/addFavourite", (req, res) => {
   console.log(userId);
   const itemId = req.body.itemId;
   const newFav = new FavouritesModel({
-      itemId: itemId, userId: userId
-    });
-    console.log(itemId,"itemId")
+    itemId: itemId, userId: userId
+  });
+  console.log(itemId, "itemId")
 
-     newFav.save({},
+  newFav.save({},
     (err, result) => {
       console.log(result);
       if (err) {
@@ -486,12 +498,12 @@ app.post("/addCart", (req, res) => {
   const qty = req.body.qty;
   const purchase = 0;
   const newFav = new CartModel({
-      itemId: itemId, userId: userId, qty: qty, purchase: purchase
-    });
-    console.log(itemId,"itemId")
-    console.log("qty",qty)
+    itemId: itemId, userId: userId, qty: qty, purchase: purchase
+  });
+  console.log(itemId, "itemId")
+  console.log("qty", qty)
 
-     newFav.save({},
+  newFav.save({},
     (err, result) => {
       console.log(result);
       if (err) {
@@ -503,13 +515,13 @@ app.post("/addCart", (req, res) => {
     }
   );
 });
-app.get("/getFavourites/:id", async(req, res) => {
+app.get("/getFavourites/:id", async (req, res) => {
   const userId = req.params.id;
   console.log(userId);
   console.log("Getting all Favourites in home");
-  try{
-    result = await FavouritesModel.find( {userId : userId}
-  ).populate("itemId");
+  try {
+    result = await FavouritesModel.find({ userId: userId }
+    ).populate("itemId");
     console.log(result)
 
     res.send({ success: true, result });
@@ -519,13 +531,13 @@ app.get("/getFavourites/:id", async(req, res) => {
   }
 });
 
-app.get("/getCart/:id", async(req, res) => {
+app.get("/getCart/:id", async (req, res) => {
   const userId = req.params.id;
   console.log(userId);
   console.log("Getting all carttimes in home");
-  try{
-    result = await CartModel.find( {userId : userId, purchase : 0}
-  ).populate("itemId");
+  try {
+    result = await CartModel.find({ userId: userId, purchase: 0 }
+    ).populate("itemId");
     console.log("cart", result)
 
     res.send({ success: true, result });
@@ -541,7 +553,7 @@ app.delete("/deleteFavourite/:itemId/:userId", (req, res) => {
   const userId = req.params.userId;
   console.log("Deleting Fav Item");
 
-    FavouritesModel.findOneAndRemove({itemId:itemId,userId:userId},
+  FavouritesModel.findOneAndRemove({ itemId: itemId, userId: userId },
 
     (err, result) => {
       console.log(result);
@@ -575,7 +587,7 @@ app.delete("/deleteCart/:cartId", (req, res) => {
 });
 
 app.post("/updateQty/:id/:qty", (req, res) => {
-  
+
   const id = req.params.id;
   const qty = req.params.qty;
   console.log("updating qty")
@@ -594,7 +606,7 @@ app.post("/updateQty/:id/:qty", (req, res) => {
 });
 
 app.post("/giftMessage/:id/", (req, res) => {
-  
+
   const id = req.params.id;
   const gift = req.body.qty;
   console.log("updating gift")
@@ -615,32 +627,32 @@ app.post("/giftMessage/:id/", (req, res) => {
 
 
 app.get("/purchase/:id", (req, res) => {
-  
-    const id = req.params.id;
-    
-    console.log("updating purchase")
-    CartModel.updateMany({  userId: id}, {$set: { purchase: 1 }},  (err, result) => {
-      if (err) {
-        console.log("couldnt update")
-        console.log(err);
-      } else {
-        console.log(result);
-        // res.send(result);
-        res.send("purchase updated");
-        console.log("qty update")
-      }
-    }
 
-    );
+  const id = req.params.id;
+
+  console.log("updating purchase")
+  CartModel.updateMany({ userId: id }, { $set: { purchase: 1 } }, (err, result) => {
+    if (err) {
+      console.log("couldnt update")
+      console.log(err);
+    } else {
+      console.log(result);
+      // res.send(result);
+      res.send("purchase updated");
+      console.log("qty update")
+    }
+  }
+
+  );
 });
 
-app.get("/getPurchases/:id", async(req, res) => {
+app.get("/getPurchases/:id", async (req, res) => {
   const userId = req.params.id;
   console.log(userId);
   console.log("Getting all purchases in home");
-  try{
-    result = await CartModel.find( {userId : userId, purchase : 1}
-  ).populate("itemId");
+  try {
+    result = await CartModel.find({ userId: userId, purchase: 1 }
+    ).populate("itemId");
     console.log("cart", result)
 
     res.send({ success: true, result });

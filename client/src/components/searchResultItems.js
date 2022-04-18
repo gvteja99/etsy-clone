@@ -74,7 +74,7 @@ function searchResultItems() {
         <div className="col-md-4 mb-4">
           <div className="card">
             <img
-              src={"/Images/" + pro.itemImage}
+              src={pro.itemImage}
               // src={require("../Images/" + pro.itemImage)}
               className="card-img-top"
               alt="..."

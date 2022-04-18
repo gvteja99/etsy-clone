@@ -72,7 +72,7 @@ function profileDashboard() {
             >
               <FavoriteBorderIcon />
             </div>
-            <img src={"/Images/" + pro.itemId.itemImage} className="card-img-top" alt="..." />
+            <img src={pro.itemId.itemImage} className="card-img-top" alt="..." />
             <p className="home_price"> <AirportShuttleIcon /> ${pro.itemId.itemPrice} </p>
 
             <div className="card-body">
@@ -94,7 +94,7 @@ function profileDashboard() {
     <div>
       {redirectVar}
       <div className="profile_dashboard">
-        {user !== null && ( <img className="profile_image" src={"/Users/Images/" + user.profilePic} alt="Update Image" /> )}
+        {user !== null && ( <img className="profile_image" src={user.profilePic} alt="Update Image" /> )}
         <span className="profile_imageIcon"> <PhotoCameraOutlined /> </span>
 
         <div className="profile_name">{cookie.load("user")}</div>

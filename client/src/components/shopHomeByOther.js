@@ -113,8 +113,8 @@ function shopHomeByOther() {
         <div  className="card">
           <img
            style={{backgroundColor:"cream"}}
-            src={"/Images/" + pro.itemImage}
-            // src={require("../Images/" + pro.itemImage)}
+            src={pro.itemImage}
+            // src={require(pro.itemImage)}
             className="card-img-top"
             alt="..."
           />

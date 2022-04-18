@@ -19,7 +19,6 @@ function profileForm() {
   const handleUserData = (e) => {
     e.preventDefault();
     const formData = new FormData();
-    console.log(userImage.lastModified + userImage.name);
     formData.append("userImage", userImage);
     formData.append("userName", userName);
     formData.append("gender", gender);
@@ -43,7 +42,7 @@ function profileForm() {
             dob: dob,
             gender: gender,
             city: city,
-            profilePic: userImage.lastModified + userImage.name,
+            profilePic: userImage,
             about: about,
           })
         );
@@ -123,7 +122,7 @@ function profileForm() {
               <div className="section">
                 <div className="label">Profile Picture</div>
                 <div className="profile-pic">
-                  <img width="200px" src={"/Users/Images/" + userImage} alt="shop" ></img>
+                  <img width="200px" src={userImage} alt="shop" ></img>
                 </div>
 
                 <input type="file" name="userImage" id="profile-picture" onChange={(event) => { setUserImage(event.target.files[0]); }} style={{ marginLeft: "40px" }} />

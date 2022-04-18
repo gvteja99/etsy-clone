@@ -98,7 +98,7 @@ const Purchases = () => {
                                         <p>{item.itemId.itemName}</p>
                                     </Link>
                                     <div className="cartitem__image">
-                                        <img src={"/Images/" + item.itemId.itemImage} alt={item.itemId.itemName} width={150} height={100} />
+                                        <img src={item.itemId.itemImage} alt={item.itemId.itemName} width={150} height={100} />
                                     </div>
 
                                     <p className="cartitem__price">${item.itemId.itemPrice}</p>

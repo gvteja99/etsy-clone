@@ -65,7 +65,7 @@ const CartItem = ({ item }) => {
     <div className="cart_pag" style={{ display: "flex", width: "100%", height: "200px", }} >
       <div className="cartitem">
         <div className="cartitem__image">
-          <img src={"/Images/" + item.itemId.itemImage} alt={item.itemId.itemName} width={150} height={100} />
+          <img src={ item.itemId.itemImage} alt={item.itemId.itemName} width={150} height={100} />
         </div>
         <Link to={`/product/${item.product}`} className="cartItem__name">
           <p>{item.itemId.itemName}</p>

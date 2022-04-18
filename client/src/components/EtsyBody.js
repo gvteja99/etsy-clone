@@ -116,7 +116,7 @@ function EtsyBody() {
             <FavoriteTwoToneIcon />
            
           </div>
-          <img src={"/Images/" + pro.itemImage} className="home_image card-img-top" alt="..." onClick={() => { handleOpenImage(pro); }} />
+          <img src={pro.itemImage} className="home_image card-img-top" alt="..." onClick={() => { handleOpenImage(pro); }} />
           <p className> Price: {localStorage.getItem("preferedCurrency")} {pro.itemPrice} </p>
 
           <div className="card-body">

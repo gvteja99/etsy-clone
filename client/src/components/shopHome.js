@@ -115,7 +115,7 @@ function shopHome() {
     return (
       <div className="col-md-4 mb-4">
         <div className="card">
-          <img src={"/Images/" + pro.itemImage} className="card-img-top" alt="..." />
+          <img src={pro.itemImage} className="card-img-top" alt="..." />
           <div className="card-body">
             <h5 className="card-title">{pro.itemName}</h5>
             <p>Amount: ${pro.itemPrice}</p>
