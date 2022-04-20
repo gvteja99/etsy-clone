@@ -1,4 +1,3 @@
-const kafka = require("./kafka/client.js");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -85,45 +84,32 @@ const uploadS3 = (bucketName) =>
         cb(null, `Product-${Date.now()}.jpeg`);
       },
     }),
-  });
+});
 
 
 
 app.use("/Images", express.static("./Images"));
 
 app.post("/register", async (req, res) => {
-  // console.log("Register");
-  // const username = req.body.username;
-  // const email = req.body.email;
-  // const password = req.body.password;
-  // const newUser = new UserModel({
-  //   name: username, email: email, password: password,
-  //   fullAddress: null, city: null, phoneNumber: null, dob: null, gender: null, profilePic: null,
-  //   about: null, shopName: null, shopImage: null
-  // });
-  // newUser.save({}, (err, result) => {
-  //   if (err) {
-  //     console.log("err", err);
-  //     res.json(err);
-  //   } else {
-  //     console.log(result);
-  //     res.send({ success: true, result });
-  //   }
-  // });
-  const reqObj = {
-    query: req.query, params: req.params, body: req.body,
-  }
-  kafka.make_request("register", reqObj, function (err, results) {
+  console.log("Register");
+  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
+  const newUser = new UserModel({
+    name: username, email: email, password: password,
+    fullAddress: null, city: null, phoneNumber: null, dob: null, gender: null, profilePic: null,
+    about: null, shopName: null, shopImage: null
+  });
+  newUser.save({}, (err, result) => {
     if (err) {
       console.log("err", err);
-      return res.status(500).json(err);
+      res.json(err);
     } else {
-      const { status_code, response } = results;
-      console.log(response);
-      return res.status(status_code).json(response);
-      //return res.send({ success: true, response.data });
+      console.log(result);
+      res.send({ success: true, result });
     }
-  }); } );
+  });
+});
 
 app.get("/signin", (req, res) => {
   console.log("getsignin");
@@ -232,9 +218,8 @@ app.post("/addProduct/:id", (req, res) => {
   uploadSingle(req, res, async (err) => {
     if (err) {
       console.log(err)
-      return res.status(400).json({ message: err.message });
-    }
-
+      return res.status(400).json({ message: err.message });}
+    
 
     const userId = req.params.id;
     const itemName = req.body.itemName;
@@ -245,7 +230,7 @@ app.post("/addProduct/:id", (req, res) => {
     const itemImage = req.file.location;
 
     const newItem = new ItemsModel({
-      userId: userId,
+      userId:userId,
       itemName: itemName, itemDescription: itemDescription, itemPrice: itemPrice,
       itemCount: itemCount, itemImage: itemImage, itemCategory: itemCategory
     });
@@ -353,27 +338,26 @@ app.put("/updateItemById/:itemId", (req, res) => {
 app.put("/updateShopImageById/:id", (req, res) => {
   console.log("In edit shop details put method");
   const uploadSingle = uploadS3("etsyclonebucket").single("shopImage");
-  uploadSingle(req, res, async (err) => {
-    if (err) {
-      console.log(err)
-      return res.status(400).json({ message: err.message });
-    }
+    uploadSingle(req, res, async (err) => {
+      if (err) {
+        console.log(err)
+        return res.status(400).json({ message: err.message });}
 
-    const userId = req.params.id;
-    const shopImage = req.file.location;
+      const userId = req.params.id;
+      const shopImage = req.file.location;
+      
 
-
-    UserModel.findByIdAndUpdate(userId, { shopImage: shopImage },
-      (err, result) => {
-        if (err) {
-          console.log(err + "err");
-          res.send(err);
-        } else {
-          res.send({ success: true, result });
+      UserModel.findByIdAndUpdate(userId, { shopImage: shopImage },
+        (err, result) => {
+          if (err) {
+            console.log(err + "err");
+            res.send(err);
+          } else {
+            res.send({ success: true, result });
+          }
         }
-      }
-    );
-  });
+      );
+    });
 });
 
 app.get("/getSearchItems/:searchValue", (req, res) => {
@@ -395,34 +379,33 @@ app.get("/getSearchItems/:searchValue", (req, res) => {
 
 
 app.put("/updateUser/:id", async (req, res) => {
-  const uploadSingle = uploadS3("etsyclonebucket").single("userImage");
-  uploadSingle(req, res, async (err) => {
-    if (err) {
-      console.log(err)
-      return res.status(400).json({ message: err.message });
-    }
+    const uploadSingle = uploadS3("etsyclonebucket").single("userImage");
+    uploadSingle(req, res, async (err) => {
+      if (err) {
+        console.log(err)
+        return res.status(400).json({ message: err.message });}
 
-    const userId = req.params.id;
-    const userName = req.body.userName;
-    const gender = req.body.gender;
-    const city = req.body.city;
-    // const dob = req.body.dob;
-    const userImage = req.file.location;
-    const about = req.body.about;
-    UserModel.findByIdAndUpdate(userId, {
-      userName: userName, city: city, gender: gender, about: about, profilePic: userImage
-    },
-      (err, result) => {
-        console.log(result);
-        if (err) {
-          console.log(err);
-          res.send({ message: "error" });
-        } else {
-          res.send({ message: "success", result });
+      const userId = req.params.id;
+      const userName = req.body.userName;
+      const gender = req.body.gender;
+      const city = req.body.city;
+      // const dob = req.body.dob;
+      const userImage = req.file.location;
+      const about = req.body.about;
+      UserModel.findByIdAndUpdate(userId, {
+        userName: userName, city: city, gender: gender, about: about, profilePic: userImage
+      },
+        (err, result) => {
+          console.log(result);
+          if (err) {
+            console.log(err);
+            res.send({ message: "error" });
+          } else {
+            res.send({ message: "success", result });
+          }
         }
-      }
-    );
-  });
+      );
+    });
 });
 
 app.get("/getItems", (req, res) => {
