@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const connection  = require("./kafka/Connection.js");
 
 const register  = require("./services/register.js");
+const getitems  = require("./services/getItems.js");
 
 
 try {
@@ -53,4 +54,5 @@ function handleTopicRequest(topic_name,fname){
 //second argument is a function that will handle this topic request
 // handleTopicRequest("post_book",Books);
 handleTopicRequest("register", register);
+handleTopicRequest("getitems", getitems);
 

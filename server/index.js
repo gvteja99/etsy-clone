@@ -1,4 +1,4 @@
-const kafka = require("./kafka/client.js");
+// const kafka = require("./kafka/client.js");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -14,6 +14,17 @@ const FavouritesModel = require("./models/Favourites");
 const CartModel = require("./models/Cart");
 const aws = require('aws-sdk');
 const multerS3 = require('multer-s3');
+const passport = require('passport');
+// const usepassport = require('./passport.js');
+// const { checkAuth } = require("../utils/passport");
+
+// const { checkAuth } = require('./passport');
+const auth = require('./passport');
+
+
+
+
+const { hashSync, compareSync } = require('bcrypt');
 
 const app = express();
 
@@ -92,38 +103,40 @@ const uploadS3 = (bucketName) =>
 app.use("/Images", express.static("./Images"));
 
 app.post("/register", async (req, res) => {
-  // console.log("Register");
-  // const username = req.body.username;
-  // const email = req.body.email;
-  // const password = req.body.password;
-  // const newUser = new UserModel({
-  //   name: username, email: email, password: password,
-  //   fullAddress: null, city: null, phoneNumber: null, dob: null, gender: null, profilePic: null,
-  //   about: null, shopName: null, shopImage: null
-  // });
-  // newUser.save({}, (err, result) => {
-  //   if (err) {
-  //     console.log("err", err);
-  //     res.json(err);
-  //   } else {
-  //     console.log(result);
-  //     res.send({ success: true, result });
-  //   }
-  // });
-  const reqObj = {
-    query: req.query, params: req.params, body: req.body,
-  }
-  kafka.make_request("register", reqObj, function (err, results) {
+  console.log("Register");
+  const username = req.body.username;
+  const email = req.body.email;
+  const password = req.body.password;
+  //const password = hashSync(req.body.password, 10);
+  console.log(password)
+  const newUser = new UserModel({
+    name: username, email: email, password: password,
+    fullAddress: null, city: null, phoneNumber: null, dob: null, gender: null, profilePic: null,
+    about: null, shopName: null, shopImage: null
+  });
+  newUser.save({}, (err, result) => {
     if (err) {
       console.log("err", err);
-      return res.status(500).json(err);
+      res.json(err);
     } else {
-      const { status_code, response } = results;
-      console.log(response);
-      return res.status(status_code).json(response);
-      //return res.send({ success: true, response.data });
+      console.log(result);
+      res.send({ success: true, result });
     }
-  }); } );
+  }); });
+  // const reqObj = {
+  //   query: req.query, params: req.params, body: req.body,
+  // }
+  // kafka.make_request("register", reqObj, function (err, results) {
+  //   if (err) {
+  //     console.log("err", err);
+  //     return res.status(500).json(err);
+  //   } else {
+  //     const { status_code, response } = results;
+  //     console.log(response);
+  //     return res.status(status_code).json(response);
+  //     //return res.send({ success: true, response.data });
+  //   }
+  // }); } );
 
 app.get("/signin", (req, res) => {
   console.log("getsignin");
@@ -134,10 +147,48 @@ app.get("/signin", (req, res) => {
   }
 });
 
+// app.post("/signin", (req, res) => {
+//   console.log("postsigin");
+//   const email = req.body.email;
+//   const password = req.body.password;
+//   //const password = hashSync(req.body.password, 10);
+//   console.log(password);
+//   UserModel.find({ email: email },
+//     (err, result) => {
+//       if (err) {
+//         console.log("sign in error");
+//         res.send({ err: err });
+//       }
+//       if ((req.body.password == result[0].password) && result.length > 0) {
+//         const payload = {
+//           username: result[0].name,
+//           password: result[0].password
+//       }
+
+//       const token = jwt.sign(payload, "Randomstring", { expiresIn: "1d" })
+//       console.log("token", token)
+
+//         res.cookie("user", result[0].name, {
+//           maxAge: 900000,
+//           httpOnly: false,
+//           path: "/",
+//         });
+//         req.session.user = result;
+//         //res.send(result);
+//         console.log("result");
+//         res.send({ success: true, user, token: "JWT " + token });
+//       } else {
+//         res.send({ message: "Invalid creds" });
+//       }
+//     }
+//   );
+// });
+
 app.post("/signin", (req, res) => {
   console.log("postsigin");
   const email = req.body.email;
   const password = req.body.password;
+  console.log(email,password);
   UserModel.find({ email: email, password: password },
     (err, result) => {
       if (err) {
@@ -145,15 +196,22 @@ app.post("/signin", (req, res) => {
         res.send({ err: err });
       }
       if (result.length > 0) {
+        console.log("in this")
         res.cookie("user", result[0].name, {
           maxAge: 900000,
           httpOnly: false,
           path: "/",
         });
+
+        const payload = { email: result.email};
+            const token = jwt.sign(payload, "Randomstring", {
+                expiresIn: "1d"
+            });
         req.session.user = result;
-        res.send(result);
+        res.send({result: result, token: "jwt" + token});
         console.log("result");
       } else {
+        console.log("invalid");
         res.send({ message: "Invalid creds" });
       }
     }
@@ -425,7 +483,8 @@ app.put("/updateUser/:id", async (req, res) => {
   });
 });
 
-app.get("/getItems", (req, res) => {
+app.get("/getItems",passport.authenticate("jwt", { session: false }), (req, res) => {
+  // app.get("/getItems", (req, res) => {
   console.log("Getting all products in home");
   ItemsModel.find({}, (err, result) => {
     console.log(result);
@@ -437,6 +496,24 @@ app.get("/getItems", (req, res) => {
     }
   });
 });
+
+// app.get("/getItems", (req, res) => {
+//   console.log("get items");
+//     kafka.make_request('getItems', req.body, function(err, results) {
+//       if (err) {
+//         return res.json({
+//           status: "error",
+//           msg: "System Error, Try Again."
+//         })
+//       } else {
+//         return res.json(results);
+//         console.log("----> getItems backend: " + results);
+//         res.end();
+//       }
+//     });
+// });
+
+
 
 app.post("/addFavourite", (req, res) => {
   const userId = req.body.userId;

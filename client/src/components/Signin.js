@@ -32,35 +32,39 @@ function Signin({ setshowSignIn }) {
 
     Axios.post("http://localhost:4000/signin", { email: email, password: password, })
       .then((response) => {
-        if (response.data.length === 1) {
+        console.log("bleh", response.data.length)
+        //if (response.data.length === 1) {
           console.log(response);
           console.log(response.data[0]);
           console.log("In frontend signin");
-          console.log(response.data[0]._id);
+          console.log(response.data.result[0]._id);
+          localStorage.setItem("token", response.data.token);
 
           dispatch(
             login({
-              id: response.data[0]._id,
-              email: response.data[0].email,
-              name: response.data[0].name,
-              shopName: response.data[0].shopName,
-              dob: response.data[0].dob,
-              gender: response.data[0].gender,
-              city: response.data[0].city,
-              phoneNumber: response.data[0].phoneNumber,
-              profilePic: response.data[0].profilePic,
-              about: response.data[0].about,
-              shopImage: response.data[0].shopImage,
+              id: response.data.result[0]._id,
+              email: response.data.result[0].email,
+              name: response.data.result[0].name,
+              shopName: response.data.result[0].shopName,
+              dob: response.data.result[0].dob,
+              gender: response.data.result[0].gender,
+              city: response.data.result[0].city,
+              phoneNumber: response.data.result[0].phoneNumber,
+              profilePic: response.data.result[0].profilePic,
+              about: response.data.result[0].about,
+              shopImage: response.data.result[0].shopImage,
               loggedIn: true,
             })
           );
 
           window.location.pathname = "/home";
-        } else {
-          setError("Invalid Credentials!");
-        }
+        // } else {
+        //   setError("Invalid Credentials!");
+        // }
       })
       .catch((err) => {
+        console.log("error")
+        console.log(err)
         setError("Invalid credentials");
       });
   };

@@ -27,7 +27,11 @@ function EtsyBody() {
   }, []);
 
   const getItems = () => {
-    Axios.get("http://localhost:4000/getItems").then((response) => {
+    const headers = { 
+      'Authorization': localStorage.getItem('token'),
+  };
+  console.log("blehgetitems")
+    Axios.get("http://localhost:4000/getItems",{headers}).then((response) => {
       if (response.data.success === true) {
         console.log(response.data.result);
         dispatch(getAllItems(response.data.result));
