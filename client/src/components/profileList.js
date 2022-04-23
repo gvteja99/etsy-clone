@@ -22,6 +22,9 @@ function profileList({ setShowProfileLists }) {
   const handleSellOnEtsy = () => {
     navigate("/sellonetsy");
   };
+  const handlePurchases = () => {
+    navigate("/purchase");
+  };
 
   const handleSignOut = (e) => {
     e.preventDefault();
@@ -50,6 +53,9 @@ function profileList({ setShowProfileLists }) {
             
             <li onClick={handleSellOnEtsy} className="profile-icon">
               Sell on Etsy
+            </li>
+            <li onClick={handlePurchases} className="profile-icon">
+              Purchases
             </li>
             <li onClick={handleSignOut} className="profile-icon">
               Sign out

@@ -44,6 +44,7 @@ const CartScreen = () => {
         })
         .catch((err) => {
           console.log(err);
+          
         });
   };
   return (

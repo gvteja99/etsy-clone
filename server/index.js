@@ -483,8 +483,8 @@ app.put("/updateUser/:id", async (req, res) => {
   });
 });
 
-app.get("/getItems",passport.authenticate("jwt", { session: false }), (req, res) => {
-  // app.get("/getItems", (req, res) => {
+// app.get("/getItems",passport.authenticate("jwt", { session: false }), (req, res) => {
+  app.get("/getItems", (req, res) => {
   console.log("Getting all products in home");
   ItemsModel.find({}, (err, result) => {
     console.log(result);
@@ -544,11 +544,13 @@ app.post("/addCart", (req, res) => {
   const itemId = req.body.itemId;
   const qty = req.body.qty;
   const purchase = 0;
+  const orderid = "0";
   const newFav = new CartModel({
-    itemId: itemId, userId: userId, qty: qty, purchase: purchase
+    itemId: itemId, userId: userId, qty: qty, purchase: purchase, orderid: orderid
   });
   console.log(itemId, "itemId")
   console.log("qty", qty)
+  console.log("newFav ",newFav)
 
   newFav.save({},
     (err, result) => {
@@ -674,12 +676,14 @@ app.post("/giftMessage/:id/", (req, res) => {
 
 
 
+
 app.get("/purchase/:id", (req, res) => {
 
   const id = req.params.id;
+  let uniqueOrderId = Math.floor(Math.random() * 1000000)
 
   console.log("updating purchase")
-  CartModel.updateMany({ userId: id }, { $set: { purchase: 1 } }, (err, result) => {
+  CartModel.updateMany({ userId: id , purchase: 0}, { $set: { purchase: 1 , orderid: uniqueOrderId} }, (err, result) => {
     if (err) {
       console.log("couldnt update")
       console.log(err);

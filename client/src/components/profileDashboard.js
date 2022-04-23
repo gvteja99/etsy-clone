@@ -18,8 +18,9 @@ function profileDashboard() {
   const [favProdS, setFavProds] = useState([]);
   const favProds = useSelector(getAllFavourites);
   const [numOfFav, setNumOfFav] = useState(0);
+  const [userImage, setUserImage] = useState("");
 
-  useEffect(() => { getFavouriteItems(); }, []);
+  useEffect(() => { getFavouriteItems(); fetchItemDetails();  }, []);
 
   const getFavouriteItems = () => {
     Axios.get("http://localhost:4000/getFavourites/" + user.id).then(
@@ -31,6 +32,20 @@ function profileDashboard() {
           console.log(response.data.result.length);
 
           console.log(favProds);
+        }
+      }
+    );
+  };
+
+  const fetchItemDetails = () => {
+    Axios.get("http://localhost:4000/getShopById/" + user.id).then(
+      (response) => {
+
+        if (response.data.success === true) {
+
+          setUserImage(response.data.result[0].profilePic);
+
+          console.log("Products stored in product");
         }
       }
     );
@@ -91,10 +106,11 @@ function profileDashboard() {
     redirectVar = <Navigate to="/home" />;
   }
   return (
+
     <div>
       {redirectVar}
       <div className="profile_dashboard">
-        {user !== null && ( <img className="profile_image" src={user.profilePic} alt="Update Image" /> )}
+        {user !== null && ( <img className="profile_image" src={userImage} alt="Update Image" /> )}
         <span className="profile_imageIcon"> <PhotoCameraOutlined /> </span>
 
         <div className="profile_name">{cookie.load("user")}</div>

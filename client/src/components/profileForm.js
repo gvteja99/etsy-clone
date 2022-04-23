@@ -122,10 +122,18 @@ function profileForm() {
               <div className="section">
                 <div className="label">Profile Picture</div>
                 <div className="profile-pic">
-                  <img width="200px" src={userImage} alt="shop" ></img>
+                  <img width="200px" src={userImage} alt="profileimage" ></img>
                 </div>
 
-                <input type="file" name="userImage" id="profile-picture" onChange={(event) => { setUserImage(event.target.files[0]); }} style={{ marginLeft: "40px" }} />
+                <input
+                  type="file"
+                  name="userImage"
+                  id="profile-picture"
+                  onChange={(event) => {
+                    setUserImage(event.target.files[0]);
+                  }}
+                  style={{ marginLeft: "40px" }}
+                />
               </div>
 
               <div className="section">

@@ -10,6 +10,9 @@ const CartSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: "users"
   },
+  orderId: {
+    type: String
+  },
   qty: {
     type: Number
   },

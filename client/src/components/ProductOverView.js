@@ -46,6 +46,7 @@ function ProductOverView() {
         qty: Number(qty),
       })
     );
+    window.location.pathname = "/cart";
 
   };
   return (
