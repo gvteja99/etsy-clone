@@ -90,18 +90,23 @@ const Purchases = () => {
                     {currentPosts.length === 0 ? (<div> You have no previous purchases. <Link to="/">Go Back</Link> </div>) : (
                         currentPosts.map((item) => (
 
-                            <div className="cart_pag" style={{ display: "flex", width: "100%", height: "200px", }} >
-                                <div className="cartitem">
-                                    <p className="cartitem__price">Order Number: {item._id}</p>
-                                    <p className="cartitem__price">Purchased On: {item.updatedAt}</p>
-                                    <Link to={`/product/${item.product}`} className="cartItem__name">
-                                        <p>{item.itemId.itemName}</p>
-                                    </Link>
-                                    <div className="cartitem__image">
-                                        <img src={item.itemId.itemImage} alt={item.itemId.itemName} width={150} height={100} />
+                            <div className="" style={{ display: "flex", width: "100%", height: "300px", }} >
+                                <div className="cartitem__image">
+                                        <img src={item.itemId.itemImage} alt={item.itemId.itemName} width={200} height={250} style={{paddingright:"100px"}}/>
                                     </div>
+                                <div className="" style={{paddingleft:"100px"} }>
+                                    <p className="" >Order Number: {item.orderId}</p> <br></br>
+                                    <p className="">Purchased On: {item.updatedAt}</p>
+                                    <p className="">Qty: {item.qty}</p>
+                                    {item.gift == "" ?(<p className="cartitem__price">Gift Note: {item.gift}</p>):(<></>)}
+                                    <p className="">Item Name: {item.itemId.itemName}</p>
+                                    {/* <Link to={`/product/${item.product}`} className="cartItem__name">
+                                        <p>{item.itemId.itemName}</p>
+                                    </Link> */}
+                                    
+                                    <p className="">Price: ${item.itemId.itemPrice * item.qty}</p>
 
-                                    <p className="cartitem__price">${item.itemId.itemPrice}</p>
+                                    <br></br>
                                 </div>
                             </div>
                         ))

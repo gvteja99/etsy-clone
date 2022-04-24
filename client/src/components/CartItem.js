@@ -19,6 +19,10 @@ const CartItem = ({ item }) => {
     Axios.post("http://localhost:4000/updateQty/" + item._id + "/" + qty)
       .then((response) => {
         console.log("Qty updated");
+        // if(item.qty == 0){
+        //   removeHandler(item._id);
+        //   console.log("bleh0")
+        // }
       })
       .catch((err) => {
         console.log(err);
@@ -34,6 +38,7 @@ const CartItem = ({ item }) => {
     Axios.post("http://localhost:4000/giftMessage/" + item._id, {qty} )
       .then((response) => {
         console.log("gift messsage updated");
+        
       })
       .catch((err) => {
         console.log(err);
@@ -73,11 +78,12 @@ const CartItem = ({ item }) => {
         <p className="cartitem__price">${item.itemId.itemPrice}</p>
         <select value={item.qty} onChange={(e) => qtyChangeHandler(e.target.value)} className="cartItem__select" >
           {[...Array(item.itemId.itemCount).keys()].map((x) => (
-            <option key={x + 1} value={x + 1}>
-              {x + 1}
+            <option key={x} value={x}>
+              {x}
             </option>
           ))}
         </select>
+        {/* {item.qty == 0?removeHandler(item._id):<></>} */}
         <button className="cartItem__deleteBtn" onClick={() => removeHandler(item._id)} > <Delete /> </button>
         <div>
           <input

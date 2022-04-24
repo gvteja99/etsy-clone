@@ -144,8 +144,8 @@ function shopHome() {
   return (
     <div>
       <Navbar />
-      {/* <Hoverbar /> */}
-      {/* <hr></hr> */}
+      <Hoverbar />
+      <hr></hr>
       <ShopHeader />
       <div className="shop_items">
         <div>

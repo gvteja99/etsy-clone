@@ -1,4 +1,4 @@
-// const kafka = require("./kafka/client.js");
+const kafka = require("./kafka/client.js");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -516,27 +516,41 @@ app.put("/updateUser/:id", async (req, res) => {
 
 
 app.post("/addFavourite", (req, res) => {
-  const userId = req.body.userId;
-  console.log(userId);
-  const itemId = req.body.itemId;
-  const newFav = new FavouritesModel({
-    itemId: itemId, userId: userId
-  });
-  console.log(itemId, "itemId")
+//   const userId = req.body.userId;
+//   console.log(userId);
+//   const itemId = req.body.itemId;
+//   const newFav = new FavouritesModel({
+//     itemId: itemId, userId: userId
+//   });
+//   console.log(itemId, "itemId")
 
-  newFav.save({},
-    (err, result) => {
-      console.log(result);
-      if (err) {
-        console.log(err);
-        res.send(err);
-      } else {
-        res.send({ success: true, result });
-      }
+//   newFav.save({},
+//     (err, result) => {
+//       console.log(result);
+//       if (err) {
+//         console.log(err);
+//         res.send(err);
+//       } else {
+//         res.send({ success: true, result });
+//       }
+//     }
+//   );
+// });
+
+  const reqObj = {
+    query: req.query, params: req.params, body: req.body,
+  }
+  kafka.make_request("addfavourites", reqObj, function (err, results) {
+    if (err) {
+      console.log("err", err);
+      return res.status(500).json(err);
+    } else {
+      const { status_code, response } = results;
+      console.log(response);
+      return res.status(status_code).json(response);
+      //return res.send({ success: true, response.data });
     }
-  );
-});
-
+  }); } );
 
 app.post("/addCart", (req, res) => {
   const userId = req.body.userId;
@@ -545,8 +559,10 @@ app.post("/addCart", (req, res) => {
   const qty = req.body.qty;
   const purchase = 0;
   const orderid = "0";
+  const gift = "";
+  console.log("orderid ", orderid)
   const newFav = new CartModel({
-    itemId: itemId, userId: userId, qty: qty, purchase: purchase, orderid: orderid
+    itemId: itemId, userId: userId, orderId: orderid, qty: qty, purchase: purchase, gift: gift
   });
   console.log(itemId, "itemId")
   console.log("qty", qty)
@@ -586,7 +602,7 @@ app.get("/getCart/:id", async (req, res) => {
   console.log(userId);
   console.log("Getting all carttimes in home");
   try {
-    result = await CartModel.find({ userId: userId, purchase: 0 }
+    result = await CartModel.find({ userId: userId, purchase: 0,qty: {$gt:0} }
     ).populate("itemId");
     console.log("cart", result)
 
@@ -679,32 +695,29 @@ app.post("/giftMessage/:id/", (req, res) => {
 
 app.get("/purchase/:id", (req, res) => {
 
-  const id = req.params.id;
-  let uniqueOrderId = Math.floor(Math.random() * 1000000)
 
-  console.log("updating purchase")
-  CartModel.updateMany({ userId: id , purchase: 0}, { $set: { purchase: 1 , orderid: uniqueOrderId} }, (err, result) => {
-    if (err) {
-      console.log("couldnt update")
-      console.log(err);
-    } else {
-      console.log(result);
-      // res.send(result);
-      res.send("purchase updated");
-      console.log("qty update")
-    }
+const reqObj = {
+  query: req.query, params: req.params, body: req.body,
+}
+kafka.make_request("purchase", reqObj, function (err, results) {
+  if (err) {
+    console.log("errpurchase", err);
+    return res.status(500).json(err);
+  } else {
+    const { status_code, response } = results;
+    console.log("responsepurchase",response);
+    return res.status(status_code).json(response);
+    //return res.send({ success: true, response.data });
   }
-
-  );
-});
+}); } );
 
 app.get("/getPurchases/:id", async (req, res) => {
   const userId = req.params.id;
   console.log(userId);
   console.log("Getting all purchases in home");
   try {
-    result = await CartModel.find({ userId: userId, purchase: 1 }
-    ).populate("itemId");
+    result = await CartModel.find({ userId: userId, purchase: 1, qty: {$gt:0} }
+    ).populate("itemId").sort({"updatedAt" : -1});
     console.log("cart", result)
 
     res.send({ success: true, result });
@@ -713,6 +726,7 @@ app.get("/getPurchases/:id", async (req, res) => {
     res.send(err);
   }
 });
+
 
 const PORT = process.env.PORT || 4000;
 

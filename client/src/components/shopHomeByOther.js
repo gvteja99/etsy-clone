@@ -144,7 +144,7 @@ function shopHomeByOther() {
   return (
     <div>
       <Navbar />
-      {/* <Hoverbar /> */}
+      <Hoverbar />
       <hr></hr>
       <ShopHeader />
       <div className="shop_items">

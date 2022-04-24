@@ -4,6 +4,8 @@ const connection  = require("./kafka/Connection.js");
 
 const register  = require("./services/register.js");
 const getitems  = require("./services/getItems.js");
+const addfavourite  = require("./services/addFavourite.js");
+const purchase  = require("./services/purchase.js");
 
 
 try {
@@ -53,6 +55,8 @@ function handleTopicRequest(topic_name,fname){
 //first argument is topic name
 //second argument is a function that will handle this topic request
 // handleTopicRequest("post_book",Books);
-handleTopicRequest("register", register);
-handleTopicRequest("getitems", getitems);
-
+//handleTopicRequest("register", register);
+//handleTopicRequest("getitems", getitems);
+handleTopicRequest("addfavourites", addfavourite);
+//handleTopicRequest("addfavourites", addfavourite);
+handleTopicRequest("purchase", purchase);

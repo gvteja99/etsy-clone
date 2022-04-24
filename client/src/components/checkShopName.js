@@ -95,8 +95,8 @@ function checkShopName() {
     <div>
       {redirectVar}
       <Navbar />
-      {/* <Hoverbar />
-      <hr></hr> */}
+      <Hoverbar />
+      <hr></hr>
       <div className="sell_page">
         <h3>Name your shop</h3>
         {/* <p>Choose a memorable name e</p> */}

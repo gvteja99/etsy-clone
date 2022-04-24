@@ -148,7 +148,7 @@ function EtsyBody() {
     >
       <div className="container-fluid mx-1">
         <div className="row mt-5 mx-1">
-          <div className="col-md-9">
+          <div className="col-md-12">
             {/* {products.length} */}
             <div className="row">{renderProducts}</div>
           </div>

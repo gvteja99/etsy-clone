@@ -95,7 +95,7 @@ function profileForm() {
   return (
     <div>
       <Navbar />
-      {/* <Hoverbar /> */}
+      <Hoverbar />
       <hr></hr>
 
       <div className="user_form">

@@ -125,8 +125,8 @@ body {
 .dash_board {
   width: 100%;
   height: 210px;
-  /* background-color: blanchedalmond; */
-  /* box-shadow: 3px 0px 4px 2px #888888; */
+  background-color: blanchedalmond; 
+  box-shadow: 3px 0px 4px 2px #888888;
 }
 .title {
   padding-top: 20px;
@@ -142,7 +142,7 @@ body {
 }
 .dashboard_item > img {
   width: 100px;
-  /* border-radius: 50%; */
+  border-radius: 50%;
   height: 105px;
 }
 

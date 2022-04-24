@@ -11,7 +11,7 @@ const Home = () => {
   return (
     <div>
       <Navbar />
-      {/* <Hoverbar /> */}
+      <Hoverbar />
       <Dashboard />
       <EtsyBody />
 
