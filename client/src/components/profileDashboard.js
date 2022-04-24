@@ -23,7 +23,7 @@ function profileDashboard() {
   useEffect(() => { getFavouriteItems(); fetchItemDetails();  }, []);
 
   const getFavouriteItems = () => {
-    Axios.get("http://localhost:4000/getFavourites/" + user.id).then(
+    Axios.get("http://3.101.105.59:4000/getFavourites/" + user.id).then(
       (response) => {
         console.log(response.data.result);
         if (response.data.success === true) {
@@ -38,7 +38,7 @@ function profileDashboard() {
   };
 
   const fetchItemDetails = () => {
-    Axios.get("http://localhost:4000/getShopById/" + user.id).then(
+    Axios.get("http://3.101.105.59:4000/getShopById/" + user.id).then(
       (response) => {
 
         if (response.data.success === true) {
@@ -56,7 +56,7 @@ function profileDashboard() {
   const handleFavourite = (itemId, userId) => {
     console.log("Favourites deleted" + itemId + userId);
     Axios.delete(
-      "http://localhost:4000/deleteFavourite/" + itemId + "/" + userId,
+      "http://3.101.105.59:4000/deleteFavourite/" + itemId + "/" + userId,
       {
         itemId: itemId,
         userId: userId,

@@ -46,7 +46,7 @@ const Purchases = () => {
 
     const getCItems = () => {
         setLoading(true);
-        Axios.get("http://localhost:4000/getPurchases/" + user.id).then(
+        Axios.get("http://3.101.105.59:4000/getPurchases/" + user.id).then(
             (response) => {
                 //console.log(response.data.result);
                 setPosts(response.data.result);

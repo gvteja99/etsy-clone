@@ -20,7 +20,7 @@ const CartScreen = () => {
   useEffect(() => { getCItems(); }, []);
 
   const getCItems = () => {
-    Axios.get("http://localhost:4000/getCart/" + user.id).then(
+    Axios.get("http://3.101.105.59:4000/getCart/" + user.id).then(
       (response) => {
         console.log(response.data.result);
         dispatch(createCart(response.data.result));
@@ -37,7 +37,7 @@ const CartScreen = () => {
   };
 
   const handleCheckOut = () => {
-    Axios.get("http://localhost:4000/purchase/" + user.id )
+    Axios.get("http://3.101.105.59:4000/purchase/" + user.id )
         .then((response) => {
           console.log("Purchased");
           window.location.pathname = "/purchase";

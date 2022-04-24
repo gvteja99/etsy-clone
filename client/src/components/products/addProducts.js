@@ -32,7 +32,7 @@ function addProducts({ setShowProductsAddPage }) {
     console.log(itemCategory,formData.itemCategory)
  
 
-    Axios.post("http://localhost:4000/addProduct/" + user.id, formData, {
+    Axios.post("http://3.101.105.59:4000/addProduct/" + user.id, formData, {
       headers: { "content-Type": "multipart/form-data" },
     }).then((response) => {
       console.warn(response);

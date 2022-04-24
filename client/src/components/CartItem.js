@@ -16,7 +16,7 @@ const CartItem = ({ item }) => {
 
     console.log("qtyChangeHandler");
 
-    Axios.post("http://localhost:4000/updateQty/" + item._id + "/" + qty)
+    Axios.post("http://3.101.105.59:4000/updateQty/" + item._id + "/" + qty)
       .then((response) => {
         console.log("Qty updated");
         // if(item.qty == 0){
@@ -35,7 +35,7 @@ const CartItem = ({ item }) => {
 
     console.log("giftMessageHandler");
 
-    Axios.post("http://localhost:4000/giftMessage/" + item._id, {qty} )
+    Axios.post("http://3.101.105.59:4000/giftMessage/" + item._id, {qty} )
       .then((response) => {
         console.log("gift messsage updated");
         
@@ -50,7 +50,7 @@ const CartItem = ({ item }) => {
   const removeHandler = (id) => {
     console.log("remove");
     dispatch(removeCartItem(id));
-    Axios.delete("http://localhost:4000/deleteCart/" + id)
+    Axios.delete("http://3.101.105.59:4000/deleteCart/" + id)
       .then((response) => {
         console.log("cart updated");
       })

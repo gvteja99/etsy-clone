@@ -60,7 +60,7 @@ function shopHome() {
   var viewItems = (variables) => {
     setShowProds(true);
     Axios.post(
-      "http://localhost:4000/getAllProducts/" + user.id,
+      "http://3.101.105.59:4000/getAllProducts/" + user.id,
       variables
     ).then((response) => {
       if (response.data.success) {

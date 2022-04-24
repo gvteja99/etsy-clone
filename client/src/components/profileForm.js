@@ -28,7 +28,7 @@ function profileForm() {
 
     console.log(dob);
 
-    Axios.put("http://localhost:4000/updateUser/" + user.id, formData, {
+    Axios.put("http://3.101.105.59:4000/updateUser/" + user.id, formData, {
       headers: { "content-Type": "multipart/form-data" },
     }).then((response) => {
       console.warn(response);
@@ -53,7 +53,7 @@ function profileForm() {
 
   useEffect(() => { fetchItemDetails(); }, []);
   const fetchItemDetails = () => {
-    Axios.get("http://localhost:4000/getShopById/" + user.id).then(
+    Axios.get("http://3.101.105.59:4000/getShopById/" + user.id).then(
       (response) => {
 
         if (response.data.success === true) {
@@ -80,7 +80,7 @@ function profileForm() {
   // }, []);
 
   // const fetchItemDetails = () => {
-  //   Axios.get("http://localhost:4000/getShopById/" + user.id).then(
+  //   Axios.get("http://3.101.105.59:4000/getShopById/" + user.id).then(
   //     (response) => {
   //       if (response) {
   //         console.log(response.data.result[0].shopImage);
