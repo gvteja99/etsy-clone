@@ -30,7 +30,7 @@ function Signin({ setshowSignIn }) {
 
     console.log("Hi")
 
-    Axios.post("http://3.101.105.59:4000/signin", { email: email, password: password, })
+    Axios.post("http://localhost:4000/signin", { email: email, password: password, })
       .then((response) => {
         console.log("bleh", response.data.length)
         //if (response.data.length === 1) {
@@ -70,7 +70,7 @@ function Signin({ setshowSignIn }) {
   };
 
   useEffect(() => {
-    Axios.get("http://3.101.105.59:4000/signin").then((response) => {
+    Axios.get("http://localhost:4000/signin").then((response) => {
 
       if (response.data.loggedIn === true) {
         setLoginStatus(response.data.user[0]);

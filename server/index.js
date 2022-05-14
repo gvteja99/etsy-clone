@@ -1,4 +1,4 @@
-const kafka = require("./kafka/client.js");
+// const kafka = require("./kafka/client.js");
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -28,14 +28,11 @@ const { hashSync, compareSync } = require('bcrypt');
 
 const app = express();
 
-const s3 = new aws.S3({
-  secretAccessKey: 'JGPbrFETWLo+Hi1JRjaub7N/V52k18d+CY6UYqJL',
-  accessKeyId: 'AKIAZBBXTE4RNICSOFPC',
-});
+
 
 app.use(
   cors({
-    origin: ["http://3.101.105.59:3000"],
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -63,7 +60,7 @@ app.use(
 
 
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "http://3.101.105.59:3000");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -83,21 +80,50 @@ mongoose.connect(
 );
 
 
-const uploadS3 = (bucketName) =>
-  multer({
-    storage: multerS3({
-      s3,
-      bucket: bucketName,
 
-      metadata: function (req, file, cb) {
-        cb(null, { fieldName: file.fieldname });
-      },
-      key: function (req, file, cb) {
-        cb(null, `Product-${Date.now()}.jpeg`);
-      },
-    }),
+
+  const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "../client/public/Images");
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + file.originalname);
+    },
   });
-
+  
+  //shop storage
+  const shopStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "../client/public/Images");
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + file.originalname);
+    },
+  });
+  
+  const userStorage = multer.diskStorage({
+    destination: (req, file, cb) => {
+      cb(null, "../client/public/Users/Images");
+    },
+    filename: (req, file, cb) => {
+      cb(null, Date.now() + file.originalname);
+    },
+  });
+  
+  const upload = multer({
+    storage: storage,
+    limits: { fileSize: "1000000" },
+    fileFilter: (req, file, cb) => {
+      const fileTypes = /jpeg|jpg|png|gif/;
+      const mimType = fileTypes.test(file.mimetype);
+      const extname = fileTypes.test(path.extname(file.originalname));
+  
+      if (mimType && extname) {
+        return cb(null, true);
+      }
+      cb("Give proper file name");
+    },
+  }).single("itemImage");
 
 
 app.use("/Images", express.static("./Images"));
@@ -282,15 +308,14 @@ app.post("/createShop/:id", (req, res) => {
 
 
 app.post("/addProduct/:id", (req, res) => {
-  console.log("In add products");
-  const userId = req.params.id;
-
-  const uploadSingle = uploadS3("etsyclonebucket").single("itemImage");
-
-  uploadSingle(req, res, async (err) => {
-    if (err) {
-      console.log(err)
-      return res.status(400).json({ message: err.message });
+  let upload = multer({ storage: storage }).single("itemImage");
+  upload(req, res, function (err) {
+    if (!req.file) {
+      return res.send("Please select an image to upload");
+    } else if (err instanceof multer.MulterError) {
+      return res.send(err);
+    } else if (err) {
+      return res.send(err);
     }
 
 
@@ -300,7 +325,7 @@ app.post("/addProduct/:id", (req, res) => {
     const itemDescription = req.body.itemDescription;
     const itemPrice = req.body.itemPrice;
     const itemCount = req.body.itemCount;
-    const itemImage = req.file.location;
+    const itemImage = req.file.filename;
 
     const newItem = new ItemsModel({
       userId: userId,
@@ -408,17 +433,30 @@ app.put("/updateItemById/:itemId", (req, res) => {
   );
 });
 
+
+
+
+
 app.put("/updateShopImageById/:id", (req, res) => {
   console.log("In edit shop details put method");
-  const uploadSingle = uploadS3("etsyclonebucket").single("shopImage");
-  uploadSingle(req, res, async (err) => {
-    if (err) {
-      console.log(err)
-      return res.status(400).json({ message: err.message });
-    }
+  // const uploadSingle = uploadS3("etsyclonebucket").single("shopImage");
+  // uploadSingle(req, res, async (err) => {
+  //   if (err) {
+  //     console.log(err)
+  //     return res.status(400).json({ message: err.message });
+  //   }
+  let upload = multer({ storage: shopStorage }).single("shopImage");
+    upload(req, res, function (err) {
+      if (!req.file) {
+        return res.send("Please select an image to upload");
+      } else if (err instanceof multer.MulterError) {
+        return res.send(err);
+      } else if (err) {
+        return res.send(err);
+      }
 
     const userId = req.params.id;
-    const shopImage = req.file.location;
+    const shopImage = req.file.filename;
 
 
     UserModel.findByIdAndUpdate(userId, { shopImage: shopImage },
@@ -516,41 +554,43 @@ app.put("/updateUser/:id", async (req, res) => {
 
 
 app.post("/addFavourite", (req, res) => {
-//   const userId = req.body.userId;
-//   console.log(userId);
-//   const itemId = req.body.itemId;
-//   const newFav = new FavouritesModel({
-//     itemId: itemId, userId: userId
-//   });
-//   console.log(itemId, "itemId")
+  const userId = req.body.userId;
+  console.log(userId);
+  const itemId = req.body.itemId;
+  const newFav = new FavouritesModel({
+    itemId: itemId, userId: userId
+  });
+  console.log(itemId, "itemId")
 
-//   newFav.save({},
-//     (err, result) => {
-//       console.log(result);
-//       if (err) {
-//         console.log(err);
-//         res.send(err);
-//       } else {
-//         res.send({ success: true, result });
-//       }
-//     }
-//   );
-// });
-
-  const reqObj = {
-    query: req.query, params: req.params, body: req.body,
-  }
-  kafka.make_request("addfavourites", reqObj, function (err, results) {
-    if (err) {
-      console.log("err", err);
-      return res.status(500).json(err);
-    } else {
-      const { status_code, response } = results;
-      console.log(response);
-      return res.status(status_code).json(response);
-      //return res.send({ success: true, response.data });
+  newFav.save({},
+    (err, result) => {
+      console.log(result);
+      if (err) {
+        console.log(err);
+        res.send(err);
+      } else {
+        res.send({ success: true, result });
+      }
     }
-  }); } );
+  );
+});
+
+
+
+  // const reqObj = {
+  //   query: req.query, params: req.params, body: req.body,
+  // }
+  // kafka.make_request("addfavourites", reqObj, function (err, results) {
+  //   if (err) {
+  //     console.log("err", err);
+  //     return res.status(500).json(err);
+  //   } else {
+  //     const { status_code, response } = results;
+  //     console.log(response);
+  //     return res.status(status_code).json(response);
+  //     //return res.send({ success: true, response.data });
+  //   }
+  // }); } );
 
 app.post("/addCart", (req, res) => {
   const userId = req.body.userId;
@@ -693,23 +733,30 @@ app.post("/giftMessage/:id/", (req, res) => {
 
 
 
+
 app.get("/purchase/:id", (req, res) => {
 
+  const id = req.params.id;
+  let uniqueOrderId = Math.floor(Math.random() * 1000000)
 
-const reqObj = {
-  query: req.query, params: req.params, body: req.body,
-}
-kafka.make_request("purchase", reqObj, function (err, results) {
-  if (err) {
-    console.log("errpurchase", err);
-    return res.status(500).json(err);
-  } else {
-    const { status_code, response } = results;
-    console.log("responsepurchase",response);
-    return res.status(status_code).json(response);
-    //return res.send({ success: true, response.data });
+  console.log("updating purchase")
+  CartModel.updateMany({ userId: id , purchase: 0}, { $set: { orderId: uniqueOrderId, purchase: 1} }, (err, result) => {
+    if (err) {
+      console.log("couldnt update")
+      console.log(err);
+    } else {
+      console.log(result);
+      // res.send(result);
+      res.send("purchase updated");
+      console.log("qty update")
+    }
   }
-}); } );
+  );
+});
+
+
+
+
 
 app.get("/getPurchases/:id", async (req, res) => {
   const userId = req.params.id;

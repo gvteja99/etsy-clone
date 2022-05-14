@@ -16,7 +16,7 @@ const CartItem = ({ item }) => {
 
     console.log("qtyChangeHandler");
 
-    Axios.post("http://3.101.105.59:4000/updateQty/" + item._id + "/" + qty)
+    Axios.post("http://localhost:4000/updateQty/" + item._id + "/" + qty)
       .then((response) => {
         console.log("Qty updated");
         // if(item.qty == 0){
@@ -35,7 +35,7 @@ const CartItem = ({ item }) => {
 
     console.log("giftMessageHandler");
 
-    Axios.post("http://3.101.105.59:4000/giftMessage/" + item._id, {qty} )
+    Axios.post("http://localhost:4000/giftMessage/" + item._id, {qty} )
       .then((response) => {
         console.log("gift messsage updated");
         
@@ -50,7 +50,7 @@ const CartItem = ({ item }) => {
   const removeHandler = (id) => {
     console.log("remove");
     dispatch(removeCartItem(id));
-    Axios.delete("http://3.101.105.59:4000/deleteCart/" + id)
+    Axios.delete("http://localhost:4000/deleteCart/" + id)
       .then((response) => {
         console.log("cart updated");
       })
@@ -70,7 +70,7 @@ const CartItem = ({ item }) => {
     <div className="cart_pag" style={{ display: "flex", width: "100%", height: "200px", }} >
       <div className="cartitem">
         <div className="cartitem__image">
-          <img src={ item.itemId.itemImage} alt={item.itemId.itemName} width={150} height={100} />
+          <img src={ "/Images/" + item.itemId.itemImage} alt={item.itemId.itemName} width={150} height={100} />
         </div>
         <Link to={`/product/${item.product}`} className="cartItem__name">
           <p>{item.itemId.itemName}</p>

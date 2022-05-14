@@ -19,7 +19,7 @@ function shopHeader() {
   const [prodUserId, setProdUserId] = useState(0);
 
   useEffect(() => {
-    Axios.get("http://3.101.105.59:4000/getShopById/" + user.id).then(
+    Axios.get("http://localhost:4000/getShopById/" + user.id).then(
       (response) => {
         if (response.data.success) {
           // setShop(response.data.result);
@@ -44,7 +44,7 @@ function shopHeader() {
     <div className="shophome_header">
       {/* {shopImage} */}
       <div className="shop_details">
-        <img width="180px" src={shopImage} alt="shop"></img>
+        <img width="180px" src={"/Images/" +shopImage} alt="shop"></img>
         <div className="shop_info">
           <h3 className="shop_name">{shopName}</h3>
           <p> 10 Sales </p>
@@ -55,7 +55,7 @@ function shopHeader() {
         <h6 style={{ fontSize: "18px" }}>SHOP OWNER</h6>
         <img
           style={{ width: "30%", borderRadius: "50%", height: "100px" }}
-          src={userImage}
+          src={"/Images/" +userImage}
           // user.profilePic}
         ></img>
         <h5>{userName}</h5>

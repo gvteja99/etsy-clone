@@ -18,7 +18,7 @@ const CartScreen = () => {
 
 
   const getCartItems = () => {
-    Axios.get("http://3.101.105.59:4000/getCart/" + user.id).then(
+    Axios.get("http://localhost:4000/getCart/" + user.id).then(
       (response) => {
         console.log(response.data.result);
         if (response.data.success === true) {

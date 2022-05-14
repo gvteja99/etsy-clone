@@ -46,7 +46,7 @@ const Purchases = () => {
 
     const getCItems = () => {
         setLoading(true);
-        Axios.get("http://3.101.105.59:4000/getPurchases/" + user.id).then(
+        Axios.get("http://localhost:4000/getPurchases/" + user.id).then(
             (response) => {
                 //console.log(response.data.result);
                 setPosts(response.data.result);
@@ -92,7 +92,7 @@ const Purchases = () => {
 
                             <div className="" style={{ display: "flex", width: "100%", height: "300px", }} >
                                 <div className="cartitem__image">
-                                        <img src={item.itemId.itemImage} alt={item.itemId.itemName} width={200} height={250} style={{paddingright:"100px"}}/>
+                                        <img src={"/Images/" +item.itemId.itemImage} alt={item.itemId.itemName} width={200} height={250} style={{paddingright:"100px"}}/>
                                     </div>
                                 <div className="" style={{paddingleft:"100px"} }>
                                     <p className="" >Order Number: {item.orderId}</p> <br></br>

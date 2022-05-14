@@ -15,7 +15,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://3.101.105.59:3000"],
+    origin: ["http://localhost:3000"],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
   })
@@ -42,7 +42,7 @@ app.use(
 );
 
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "http://3.101.105.59:3000");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader(
     "Access-Control-Allow-Methods",
@@ -224,26 +224,7 @@ app.post("/createShop/:id", (req, res) => {
   );
 });
 
-const addProduct = async (req, res) => {
-  const userId = req.params.id;
-  const itemImage = req.itemImage;
-  const itemName = req.body.itemName;
-  const itemDescriprion = req.body.description;
-  const itemPrice = req.body.price;
-  const itemCount = req.body.count;
 
-  db.query(
-    "INSERT INTO Items (userId, itemName, itemPrice, itemDescription, itemCount, itemImage) VALUES (?, ?, ?, ?, ?, ?)",
-    [userId, itemName, itemPrice, itemDescriprion, itemCount, itemImage],
-    (err, result) => {
-      if (err) {
-        res.send("error" + err);
-      } else {
-        res.send("Product added successfully");
-      }
-    }
-  );
-};
 app.post("/addProduct/:id", async (req, res) => {
   try {
     let upload = multer({ storage: storage }).single("itemImage");
@@ -291,6 +272,27 @@ app.post("/addProduct/:id", async (req, res) => {
     console.log(err);
   }
 });
+
+// const addProduct = async (req, res) => {
+//   const userId = req.params.id;
+//   const itemImage = req.itemImage;
+//   const itemName = req.body.itemName;
+//   const itemDescriprion = req.body.description;
+//   const itemPrice = req.body.price;
+//   const itemCount = req.body.count;
+
+//   db.query(
+//     "INSERT INTO Items (userId, itemName, itemPrice, itemDescription, itemCount, itemImage) VALUES (?, ?, ?, ?, ?, ?)",
+//     [userId, itemName, itemPrice, itemDescriprion, itemCount, itemImage],
+//     (err, result) => {
+//       if (err) {
+//         res.send("error" + err);
+//       } else {
+//         res.send("Product added successfully");
+//       }
+//     }
+//   );
+// };
 
 app.post("/getAllProducts/:id", (req, res) => {
   const id = req.params.id;
@@ -389,41 +391,41 @@ app.put("/updateItemById/:itemId", (req, res) => {
   );
 });
 
-app.put("/updateItemImageById/:itemId", (req, res) => {
-  try {
-    let upload = multer({ storage: storage }).single("itemImage");
-    upload(req, res, function (err) {
-      if (!req.file) {
-        return res.send("Please select an image to upload");
-      } else if (err instanceof multer.MulterError) {
-        return res.send(err);
-      } else if (err) {
-        return res.send(err);
-      }
+// app.put("/updateItemImageById/:itemId", (req, res) => {
+//   try {
+//     let upload = multer({ storage: storage }).single("itemImage");
+//     upload(req, res, function (err) {
+//       if (!req.file) {
+//         return res.send("Please select an image to upload");
+//       } else if (err instanceof multer.MulterError) {
+//         return res.send(err);
+//       } else if (err) {
+//         return res.send(err);
+//       }
 
-      const id = req.params.itemId;
-      const itemImage = req.file.filename;
-      console.log("In update item post");
-      console.log(id);
-      console.log(itemImage);
-      db.query(
-        "UPDATE Items SET itemImage=? WHERE itemId=?",
-        [itemImage, id],
-        (err, result) => {
-          console.log(result);
-          if (err) {
-            console.log(err);
-            res.send(err);
-          } else {
-            res.send({ success: true, result });
-          }
-        }
-      );
-    });
-  } catch (err) {
-    console.log(err);
-  }
-});
+//       const id = req.params.itemId;
+//       const itemImage = req.file.filename;
+//       console.log("In update item post");
+//       console.log(id);
+//       console.log(itemImage);
+//       db.query(
+//         "UPDATE Items SET itemImage=? WHERE itemId=?",
+//         [itemImage, id],
+//         (err, result) => {
+//           console.log(result);
+//           if (err) {
+//             console.log(err);
+//             res.send(err);
+//           } else {
+//             res.send({ success: true, result });
+//           }
+//         }
+//       );
+//     });
+//   } catch (err) {
+//     console.log(err);
+//   }
+// });
 
 app.get("/getShopById/:userId", (req, res) => {
   console.log("In get shop by id");

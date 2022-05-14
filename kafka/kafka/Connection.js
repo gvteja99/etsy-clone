@@ -1,6 +1,6 @@
 var kafka = require("kafka-node");
 // import kafka from "kafka-node";
-const ipAddress = "3.101.105.59";
+const ipAddress = "localhost";
 function ConnectionProvider() {
   this.getConsumer = function (topic_name) {
     // this.client = new kafka.KafkaClient(`${ipAddress}:2181`);

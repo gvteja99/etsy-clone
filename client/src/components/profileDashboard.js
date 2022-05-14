@@ -23,7 +23,7 @@ function profileDashboard() {
   useEffect(() => { getFavouriteItems(); fetchItemDetails();  }, []);
 
   const getFavouriteItems = () => {
-    Axios.get("http://3.101.105.59:4000/getFavourites/" + user.id).then(
+    Axios.get("http://localhost:4000/getFavourites/" + user.id).then(
       (response) => {
         console.log(response.data.result);
         if (response.data.success === true) {
@@ -38,7 +38,7 @@ function profileDashboard() {
   };
 
   const fetchItemDetails = () => {
-    Axios.get("http://3.101.105.59:4000/getShopById/" + user.id).then(
+    Axios.get("http://localhost:4000/getShopById/" + user.id).then(
       (response) => {
 
         if (response.data.success === true) {
@@ -56,7 +56,7 @@ function profileDashboard() {
   const handleFavourite = (itemId, userId) => {
     console.log("Favourites deleted" + itemId + userId);
     Axios.delete(
-      "http://3.101.105.59:4000/deleteFavourite/" + itemId + "/" + userId,
+      "http://localhost:4000/deleteFavourite/" + itemId + "/" + userId,
       {
         itemId: itemId,
         userId: userId,
@@ -87,7 +87,7 @@ function profileDashboard() {
             >
               <FavoriteBorderIcon />
             </div>
-            <img src={pro.itemId.itemImage} className="card-img-top" alt="..." />
+            <img src={"/Images/" +pro.itemId.itemImage} className="card-img-top" alt="..." />
             <p className="home_price"> <AirportShuttleIcon /> ${pro.itemId.itemPrice} </p>
 
             <div className="card-body">
@@ -110,7 +110,7 @@ function profileDashboard() {
     <div>
       {redirectVar}
       <div className="profile_dashboard">
-        {user !== null && ( <img className="profile_image" src={userImage} alt="Update Image" /> )}
+        {user !== null && ( <img className="profile_image" src={"/Images/" +userImage} alt="Update Image" /> )}
         <span className="profile_imageIcon"> <PhotoCameraOutlined /> </span>
 
         <div className="profile_name">{cookie.load("user")}</div>

@@ -20,7 +20,7 @@ function ProductOverView() {
   const addToCartHandler = (itemId, userId) => {
     console.log("add to cart handler");
     console.log("Items added to Cart" + itemId + userId);
-    Axios.post("http://3.101.105.59:4000/addCart", {
+    Axios.post("http://localhost:4000/addCart", {
       
       itemId: itemId,
       userId: userId,
@@ -59,7 +59,7 @@ function ProductOverView() {
         <div className="productscreen__left">
           <div className="left__image">
             <img
-              src={ productView.itemImage}
+              src={ "/Images/" +productView.itemImage}
               // src={require( productView.itemImage)}
               alt={productView.itemName}
               //   height={300}

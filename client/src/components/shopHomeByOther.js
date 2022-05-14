@@ -56,7 +56,7 @@ function shopHomeByOther() {
     setShowProds(true);
     console.log("---------------in view Items-------------------");
     Axios.post(
-      "http://3.101.105.59:4000/getAllProducts/" + product.userId,
+      "http://localhost:4000/getAllProducts/" + product.userId,
       variables
     ).then((response) => {
       if (response.data.success) {
@@ -113,7 +113,7 @@ function shopHomeByOther() {
         <div  className="card">
           <img
            style={{backgroundColor:"cream"}}
-            src={pro.itemImage}
+            src={"/Images/" +pro.itemImage}
             // src={require(pro.itemImage)}
             className="card-img-top"
             alt="..."
