@@ -17,15 +17,25 @@ const multerS3 = require('multer-s3');
 const passport = require('passport');
 // const usepassport = require('./passport.js');
 // const { checkAuth } = require("../utils/passport");
-
 // const { checkAuth } = require('./passport');
+
+
+const { query } = require("./graphql/queries");
+const { mutation } = require("./graphql/mutations");
+
+const {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLString,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLFloat,
+  GraphQLInputObjectType,
+} = require("graphql");
+
+
 const auth = require('./passport');
-
-
-
-
 const { hashSync, compareSync } = require('bcrypt');
-
 const app = express();
 
 
@@ -43,6 +53,14 @@ app.use(bodyParser.urlencoded({ limit: "20mb", extended: true }));
 
 
 app.use(express.json());
+
+const { graphqlHTTP } = require("express-graphql");
+const schema = new GraphQLSchema({
+  query: query,
+  mutation: mutation,
+});
+// app.listen(3003, () => console.log("server running"));
+app.use("/graphql", graphqlHTTP({ schema, graphiql: true }));
 
 app.use(
   session({

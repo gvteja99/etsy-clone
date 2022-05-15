@@ -3,34 +3,60 @@ import Axios from "axios";
 import { useDispatch } from "react-redux";
 import { login, registerUser, activeShop } from "../features/userSlice";
 
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  useQuery,
+  useMutation,
+  useLazyQuery,
+  gql,
+} from "@apollo/client";
+import { REGISTER } from "../graphql/mutation";
+
 function register({ setShowRegister }) {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
-
-  const addUser = (e) => {
-    e.preventDefault();
-    // localStorage.Item("preferedCurrency", userPreferedCurrency);
-    Axios.post("http://localhost:4000/register", {
-      email: email,
-      username: username,
-      password: password,
-    }).then((response) => {
-      if (response.data.success === true) {
-        console.log("Success========: " + response.data.success);
-
+  const [register] = useMutation(
+    REGISTER,
+    {
+      onCompleted(res) {
         dispatch(
           registerUser({
             username: username,
             email: email,
           })
         );
-        console.log("In frontend register");
-
         window.location.pathname = "/home";
-      }
-    });
+      },
+      onError(e) {
+        console.log(e);
+      },
+    }
+  );
+  const customerSignupApi = async () => {
+    const body = {
+      
+      
+    };
+    console.log("body", body);
+    try {
+      register({
+        variables: { name: username,
+          email,
+          password, },
+      });
+    } catch (err) {
+      console.log(err)
+    }
+  }
+
+  const addUser = (e) => {
+    e.preventDefault();
+    customerSignupApi();
+    
   };
 
   return (
