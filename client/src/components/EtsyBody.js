@@ -6,12 +6,16 @@ import FavoriteTwoToneIcon from "@mui/icons-material/FavoriteTwoTone";
 // import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
 import AirportShuttleIcon from "@mui/icons-material/AirportShuttle";
 import { selectUser } from "../features/userSlice";
+import { useQuery, gql } from "@apollo/client";
 
 import { productOverview } from "../features/cartSlice";
+import { GET_ITEM_LIST } from "../graphql/queries";
+
 
 
 
 function EtsyBody() {
+  const { error, loading, data } = useQuery(GET_ITEM_LIST);
   const dispatch = useDispatch();
   const products = useSelector(getAllProducts);
   const user = useSelector(selectUser);
@@ -22,9 +26,13 @@ function EtsyBody() {
 
 
   useEffect(() => {
-    getItems();
-    // getFavourites();
-  }, []);
+    console.log("data from graphql");
+    console.log(data);
+    if (data !== undefined) {
+      dispatch(getAllItems(data.getItemsList));
+      SetItems(data.getItemsList);
+    }
+  }, [data]);
 
   const getItems = () => {
     const headers = { 
