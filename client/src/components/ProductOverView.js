@@ -8,8 +8,42 @@ import Hoverbar from "./Hoverbar";
 import Navbar from "./Navbar";
 import "./ProductOverView.css";
 import { getCartItems } from "../features/cartItemsSlice";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  useQuery,
+  useMutation,
+  useLazyQuery,
+  gql,
+} from "@apollo/client";
+import { ADDCART } from "../graphql/mutation";
 
 function ProductOverView() {
+  const [addcart] = useMutation(
+    ADDCART,
+    {
+      onCompleted(res) {
+        dispatch(
+          createCartItem({
+            itemId: productView.itemId,
+            itemName: productView.itemName,
+            itemDescription: productView.itemDescription,
+            itemImage: productView.itemImage,
+            itemPrice: productView.itemPrice,
+            itemCount: productView.itemCount,
+            itemId: productView.itemId,
+            qty: Number(qty),
+          })
+        );
+        window.location.pathname = "/cart";
+      },
+      onError(e) {
+        console.log(e);
+      },
+    }
+  );
+
   const [qty, setQty] = useState(1);
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
@@ -18,36 +52,12 @@ function ProductOverView() {
   // const cartItems = useSelector(getCartItems);
 
   const addToCartHandler = (itemId, userId) => {
-    console.log("add to cart handler");
-    console.log("Items added to Cart" + itemId + userId);
-    Axios.post("http://localhost:4000/addCart", {
-      
-      itemId: itemId,
-      userId: userId,
-      qty: Number(qty)
-      
-    }).then((response) => {
-      if (response.data.success === true) {
-        console.log(response.data.result);
-        console.log("new cart item added");
-      }
+    addcart({
+      variables: {
+        userId: userId,
+        itemId: itemId,
+        qty: Number(qty) },
     });
-
- 
-    dispatch(
-      createCartItem({
-        itemId: productView.itemId,
-        itemName: productView.itemName,
-        itemDescription: productView.itemDescription,
-        itemImage: productView.itemImage,
-        itemPrice: productView.itemPrice,
-        itemCount: productView.itemCount,
-        itemId: productView.itemId,
-        qty: Number(qty),
-      })
-    );
-    window.location.pathname = "/cart";
-
   };
   return (
     <>

@@ -5,10 +5,21 @@ import {
 
 const GET_ITEM_LIST = gql`
 query{ getItemsList {
-    _id userId itemName itemCategory itemDescription itemCount itemImage 
+    _id userId itemName itemCategory itemPrice itemDescription itemCount itemImage 
   }
 }
 `; 
+
+const GET_SHOP_NAME = gql`
+query getShopById($userId : String) {
+  getShopById(userId : $userId){
+  _id name email password fullAddress city phoneNumber dob gender profilePic about shopName shopImage
+}
+}
+`; 
+
+
+
 
 // const GET_ITEM_LIST = gql`
 // query getCustomerProfile($id: ID!) {
@@ -21,4 +32,5 @@ query{ getItemsList {
 
 export {
     GET_ITEM_LIST,
+    GET_SHOP_NAME,
 }

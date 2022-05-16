@@ -5,10 +5,53 @@ import { useDispatch, useSelector } from "react-redux";
 import { activeShop, selectUser, updateUser } from "../features/userSlice";
 import Navbar from "./Navbar";
 import Hoverbar from "./Hoverbar";
+import {
+  ApolloClient,
+  InMemoryCache,
+  ApolloProvider,
+  useQuery,
+  useMutation,
+  useLazyQuery,
+  gql,
+} from "@apollo/client";
+import { CREATESHOP } from "../graphql/mutation";
 
 function checkShopName() {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  const [createshop] = useMutation(
+    CREATESHOP,
+    {
+      onCompleted(res) {
+        dispatch(
+          updateUser({
+            shopName: shopName,
+          })
+        );
+        window.location.pathname = "/shopHome";
+      },
+      onError(e) {
+        console.log(e);
+      },
+    }
+  );
+  const shopApi = async () => {
+    const body = {
+      
+      
+    };
+    console.log("body", body);
+    try {
+      createshop({
+        variables: { 
+          id: user.id,
+          shopName: shopName,
+        },
+      });
+    } catch (err) {
+      console.log(err)
+    }
+  }
 
   const [shopName, setShopName] = useState("");
   const [error, setError] = useState("");
@@ -36,22 +79,24 @@ function checkShopName() {
     }
   };
 
+
   const handleCreateShop = () => {
-    Axios.post("http://localhost:4000/createShop/" + user.id, {
-      shopName: shopName,
-    }).then((response) => {
-      if (response.data) {
-        console.log("Data Inserted successfully using post shop method");
-        // console.log(response.data[0]);
-        // console.log(response.data);
-        dispatch(
-          updateUser({
-            shopName: shopName,
-          })
-        );
-        window.location.pathname = "/shopHome";
-      }
-    });
+    shopApi();
+    // Axios.post("http://localhost:4000/createShop/" + user.id, {
+    //   shopName: shopName,
+    // }).then((response) => {
+    //   if (response.data) {
+    //     console.log("Data Inserted successfully using post shop method");
+    //     // console.log(response.data[0]);
+    //     // console.log(response.data);
+    //     dispatch(
+    //       updateUser({
+    //         shopName: shopName,
+    //       })
+    //     );
+    //     window.location.pathname = "/shopHome";
+    //   }
+    // });
   };
 
 
