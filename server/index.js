@@ -17,7 +17,8 @@ const multerS3 = require('multer-s3');
 const passport = require('passport');
 // const usepassport = require('./passport.js');
 // const { checkAuth } = require("../utils/passport");
-// const { checkAuth } = require('./passport');
+// const { generateUploadURL } = require('./s3');
+
 
 
 const { query } = require("./graphql/queries");
@@ -38,7 +39,11 @@ const auth = require('./passport');
 const { hashSync, compareSync } = require('bcrypt');
 const app = express();
 
-
+app.get('/s3Url', async (req, res) => {
+  const url = await generateUploadURL()
+  res.send({url})
+})
+app.use(express.static('client'))
 
 app.use(
   cors({

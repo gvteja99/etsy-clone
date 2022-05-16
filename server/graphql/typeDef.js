@@ -53,9 +53,21 @@ const {
       gift: { type: GraphQLString },
     }),
   });
-
   const CartItem = new GraphQLObjectType({
     name: "CartItem",
+    fields: () => ({
+      _id: { type: GraphQLString },
+      itemId: { type: Items },
+      userId: { type: GraphQLString },
+      orderId: { type: GraphQLString },
+      qty: { type: GraphQLInt },
+      purchase: { type: GraphQLInt },
+      gift: { type: GraphQLString },
+    }),
+  });
+
+  const PurchaseItem = new GraphQLObjectType({
+    name: "PurchaseItem",
     fields: () => ({
       _id: { type: GraphQLString },
       itemId: { type: Items },
@@ -73,6 +85,7 @@ const {
     User,
     Items,
     Cart,
-    CartItem
+    CartItem,
+    PurchaseItem
     
   };

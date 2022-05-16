@@ -38,7 +38,7 @@ function addProducts({ setShowProductsAddPage }) {
       console.warn(response);
       if (response.data.message === "success") {
         console.log("Image uploaded successfully");
-        window.location.pathname = "/shopHome";
+        //window.location.pathname = "/shopHome";
       }
     });
     setShowProductsAddPage(false);

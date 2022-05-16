@@ -1,4 +1,4 @@
-const { User, Items, Cart, CartItem} = require("../graphql/typeDef");
+const { User, Items, Cart, CartItem,PurchaseItem} = require("../graphql/typeDef");
 const {
   GraphQLSchema,
   GraphQLObjectType,
@@ -21,21 +21,21 @@ const query = new GraphQLObjectType({
       },
     },
     getCartList: {
-      type: new GraphQLList(Cart),
+      type: new GraphQLList(CartItem),
       args: {
         userId: { type: GraphQLString },
       },
       async resolve(parent, args) {
-        const cartItems = await cartsdb
-          .find({ userId: args.userId })
-          .populate("itemId")
-          .exec();
-        console.log(cartItems);
-        return cartItems;
+        const result = await CartModel.find({ userId: args.userId, purchase: 0, qty: {$gt:0} }
+          ).populate("itemId").sort({"updatedAt" : -1});
+          console.log("userId", args.userId)
+
+        return result;
+
       },
     },
     getPurchases: {
-      type: new GraphQLList(CartItem),
+      type: new GraphQLList(PurchaseItem),
       args: {
         userId: { type: GraphQLString },
       },

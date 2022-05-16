@@ -31,7 +31,7 @@ const mutation = new GraphQLObjectType({
         const password = args.password;
         const newUser = new UserModel({
             name: name, email: email, password: password,
-            fullAddress: null, city: null, phoneNumber: null, dob: null, gender: null, profilePic: null,
+            fullAddress: null, city: "Daly City", phoneNumber: null, dob: null, gender: null, profilePic: null,
             about: null, shopName: null, shopImage: null
           });
           newUser.save()
@@ -53,6 +53,27 @@ const mutation = new GraphQLObjectType({
         return newFav;
       },
     },
+
+    additem: {
+      type: Items,
+      args: {
+        userId : { type: GraphQLString },
+        itemName : { type: GraphQLString },
+        itemCategory: { type: GraphQLString },
+        itemDescription : { type: GraphQLString },
+        itemPrice  : { type: GraphQLInt },
+       itemImageurl : { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        const newItem = new ItemsModel({
+          userId: args.userId, itemName: args.itemName, itemCategory: args.itemCategory, itemDescription: args.itemDescription, itemPrice: args.itemPrice, 
+          itemImageurl: args.itemImageurl, 
+        });
+        await newItem.save();
+        return newItem;
+      },
+    },
+
     createShop: {
       type: User,
       args: {
@@ -66,28 +87,50 @@ const mutation = new GraphQLObjectType({
       },
     },
 
-    // findShopDuplicates: {
-    //   type: User,
-    //   args: {
-    //     shopName: { type: GraphQLString },
-    //   },
-    //   resolve(parent, args) {
-    //     UserController.findShopDuplicates(args.shopName);
-    //     return args;
-    //   },
-    // },
-    // updateUserProfile: {
-    //   type: User,
-    //   args: {
-    //     username: { type: GraphQLString },
-    //     email: { type: GraphQLString },
-    //     password: { type: GraphQLString },
-    //   },
-    //   resolve(parent, args) {
-    //     UserController.create(args.username, args.email, args.password);
-    //     return args;
-    //   },
-    // },
+    updateUser:{
+      type: User,
+      args: {
+        id: { type: GraphQLString },
+        name : { type: GraphQLString },
+        email : { type: GraphQLString },
+        fullAddress : { type: GraphQLString },
+        city : { type: GraphQLString },
+        dob : { type: GraphQLString },
+        gender : { type: GraphQLString },
+        aebout : { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        const id = args.id
+        const name = args.name;
+        const email = args.email;
+        const fullAddress = args.fullAddress;
+        const city = args.city;
+        const dob = args.dob;
+        const gender = args.gender;
+        const about = args.about;
+       
+        UserModel.findByIdAndUpdate(id, {
+            name: name, email: email, password: password,
+            fullAddress: fullAddress, city: null, city: city, dob: dob, gender: gender, about: about,
+             shopName: null, shopImage: null
+          });
+         
+        return args;
+      },
+      
+    },
+
+    findShopDuplicates: {
+      type: User,
+      args: {
+        shopName: { type: GraphQLString },
+      },
+      resolve(parent, args) {
+        UserController.findShopDuplicates(args.shopName);
+        return args;
+      },
+    },
+
   },
 });
 
