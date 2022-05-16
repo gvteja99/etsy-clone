@@ -167,20 +167,7 @@ app.post("/register", async (req, res) => {
       res.send({ success: true, result });
     }
   }); });
-  // const reqObj = {
-  //   query: req.query, params: req.params, body: req.body,
-  // }
-  // kafka.make_request("register", reqObj, function (err, results) {
-  //   if (err) {
-  //     console.log("err", err);
-  //     return res.status(500).json(err);
-  //   } else {
-  //     const { status_code, response } = results;
-  //     console.log(response);
-  //     return res.status(status_code).json(response);
-  //     //return res.send({ success: true, response.data });
-  //   }
-  // }); } );
+
 
 app.get("/signin", (req, res) => {
   console.log("getsignin");
@@ -191,42 +178,8 @@ app.get("/signin", (req, res) => {
   }
 });
 
-// app.post("/signin", (req, res) => {
-//   console.log("postsigin");
-//   const email = req.body.email;
-//   const password = req.body.password;
-//   //const password = hashSync(req.body.password, 10);
-//   console.log(password);
-//   UserModel.find({ email: email },
-//     (err, result) => {
-//       if (err) {
-//         console.log("sign in error");
-//         res.send({ err: err });
-//       }
-//       if ((req.body.password == result[0].password) && result.length > 0) {
-//         const payload = {
-//           username: result[0].name,
-//           password: result[0].password
-//       }
 
-//       const token = jwt.sign(payload, "Randomstring", { expiresIn: "1d" })
-//       console.log("token", token)
 
-//         res.cookie("user", result[0].name, {
-//           maxAge: 900000,
-//           httpOnly: false,
-//           path: "/",
-//         });
-//         req.session.user = result;
-//         //res.send(result);
-//         console.log("result");
-//         res.send({ success: true, user, token: "JWT " + token });
-//       } else {
-//         res.send({ message: "Invalid creds" });
-//       }
-//     }
-//   );
-// });
 
 app.post("/signin", (req, res) => {
   console.log("postsigin");
@@ -509,11 +462,15 @@ app.get("/getSearchItems/:searchValue", (req, res) => {
 
 
 app.put("/updateUser/:id", async (req, res) => {
-  const uploadSingle = uploadS3("etsyclonebucket").single("userImage");
-  uploadSingle(req, res, async (err) => {
-    if (err) {
-      console.log(err)
-      return res.status(400).json({ message: err.message });
+  // const uploadSingle = uploadS3("etsyclonebucket").single("userImage");
+  let upload = multer({ storage: shopStorage }).single("userImage");
+  upload(req, res, function (err) {
+    if (!req.file) {
+      return res.send("Please select an image to upload");
+    } else if (err instanceof multer.MulterError) {
+      return res.send(err);
+    } else if (err) {
+      return res.send(err);
     }
 
     const userId = req.params.id;
@@ -521,7 +478,7 @@ app.put("/updateUser/:id", async (req, res) => {
     const gender = req.body.gender;
     const city = req.body.city;
     // const dob = req.body.dob;
-    const userImage = req.file.location;
+    const userImage = req.file.filename;
     const about = req.body.about;
     UserModel.findByIdAndUpdate(userId, {
       userName: userName, city: city, gender: gender, about: about, profilePic: userImage

@@ -1,4 +1,4 @@
-const { Customer, Items, User } = require("../graphql/typeDef");
+const { Cart, Items, User } = require("../graphql/typeDef");
 const {
   GraphQLSchema,
   GraphQLObjectType,
@@ -38,6 +38,34 @@ const mutation = new GraphQLObjectType({
         return newUser;
       },
     },
+    addcart: {
+      type: Cart,
+      args: {
+        userId: { type: GraphQLString },
+        itemId: { type: GraphQLString },
+        qty: { type: GraphQLInt },
+      },
+      async resolve(parent, args) {
+        const newFav = new CartModel({
+          itemId: args.itemId, userId: args.userId, orderId: "0", qty: args.qty, purchase: 0, gift: ""
+        });
+        await newFav.save();
+        return newFav;
+      },
+    },
+    createShop: {
+      type: User,
+      args: {
+        shopName: { type: GraphQLString },
+        id: { type: GraphQLString },
+      },
+      async resolve(parent, args) {
+        console.log("HI")
+        await UserModel.findByIdAndUpdate(args.id, { shopName: args.shopName })
+        return args;
+      },
+    },
+
     // findShopDuplicates: {
     //   type: User,
     //   args: {
