@@ -10,15 +10,25 @@ import Navbar from "./Navbar";
 import Hoverbar from "./Hoverbar";
 import "./CartItem.css";
 import Pagination from './Pagination';
+import { GET_PURCHASES } from "../graphql/queries";
+import { useQuery, gql } from "@apollo/client";
+
+
 
 
 const Purchases = () => {
-    const dispatch = useDispatch();
     const user = useSelector(selectUser);
+
+    console.log("user", user.id);
+    const { error,loading, data } = useQuery(GET_PURCHASES,{
+        variables: {userId: user.id}
+    });
+
+    const dispatch = useDispatch();
     const products = useSelector(getCart);
 
     const [posts, setPosts] = useState([]);
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
     const [postsPerPage,setPostsPerPage] = useState(5);
 
@@ -40,22 +50,31 @@ const Purchases = () => {
         // localStorage.setItem("postsPerPage", qty);
         // postsPerPage = localStorage.getItem("postsPerPage");
 
-        console.log("postsPerPage",postsPerPage);};
-
-    useEffect(() => { getCItems(); }, []);
-
-    const getCItems = () => {
-        setLoading(true);
-        Axios.get("http://localhost:4000/getPurchases/" + user.id).then(
-            (response) => {
-                //console.log(response.data.result);
-                setPosts(response.data.result);
-                dispatch(createCart(response.data.result));
-                if (response.data.success === true) {
-                    setLoading(false);
-                }
-            });
+        console.log("postsPerPage",postsPerPage);
     };
+    useEffect(() => {
+        console.log("data from graphql");
+        console.log(data);
+        if (data !== undefined) {
+            setPosts(data.getPurchases);
+            dispatch(createCart(data.getPurchases));
+        }
+      }, [data]);
+
+    // useEffect(() => { getCItems(); }, []);
+
+    // const getCItems = () => {
+    //     setLoading(true);
+    //     Axios.get("http://localhost:4000/getPurchases/" + user.id).then(
+    //         (response) => {
+    //             //console.log(response.data.result);
+    //             setPosts(response.data.result);
+    //             dispatch(createCart(response.data.result));
+    //             if (response.data.success === true) {
+    //                 setLoading(false);
+    //             }
+    //         });
+    // };
 
     // Change page
 

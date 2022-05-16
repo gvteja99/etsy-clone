@@ -18,6 +18,14 @@ query getShopById($userId : String) {
 }
 `; 
 
+const GET_PURCHASES = gql`
+query getPurchases($userId : String) {
+  getPurchases(userId : $userId){
+    _id  itemId{_id userId itemName itemCategory itemPrice itemDescription itemCount itemImage} userId orderId qty purchase gift 
+  }
+}
+`; 
+
 
 
 
@@ -33,4 +41,5 @@ query getShopById($userId : String) {
 export {
     GET_ITEM_LIST,
     GET_SHOP_NAME,
+    GET_PURCHASES
 }

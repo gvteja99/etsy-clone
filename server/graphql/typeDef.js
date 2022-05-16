@@ -54,9 +54,25 @@ const {
     }),
   });
 
+  const CartItem = new GraphQLObjectType({
+    name: "CartItem",
+    fields: () => ({
+      _id: { type: GraphQLString },
+      itemId: { type: Items },
+      userId: { type: GraphQLString },
+      orderId: { type: GraphQLString },
+      qty: { type: GraphQLInt },
+      purchase: { type: GraphQLInt },
+      gift: { type: GraphQLString },
+    }),
+  });
+
+
+
   module.exports = {
     User,
     Items,
     Cart,
+    CartItem
     
   };
