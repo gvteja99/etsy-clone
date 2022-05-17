@@ -25,6 +25,19 @@ mutation createShop(
     }
 }`;
 
+const ADDITEM = gql`
+mutation additem(
+    $userId: String!, $itemName: String,$itemCategory: String,$itemDescription: String,$itemPrice: Int,$itemImageurl: String
+) {
+    addproduct(
+
+        userId: $userId, itemName: $itemName,itemCategory: $itemCategory,itemDescription: $itemDescription,itemPrice: $itemPrice,itemImageurl: $itemImageurl
+    ) {
+    _id userId itemName itemCategory itemDescription itemPrice itemImageurl 
+    }
+}`;
+
+
 const ADDCART = gql`
 mutation addcart(
     $userId: String, $itemId: String , $qty: Int
@@ -36,9 +49,35 @@ mutation addcart(
     }
 }`;
 
+const UPDATEQTY = gql`
+mutation updateqty(
+    $cartId: String, $qty: Int
+) {
+    updateqty(
+        cartId: $cartId, qty: $qty
+    ) {
+    _id itemId userId orderId qty purchase gift 
+    }
+}`;
+
+const UPDATEGIFT = gql`
+mutation updategift(
+    $cartId: String, $gift: String
+) {
+    updategift(
+        cartId: $cartId, gift: $gift
+    ) {
+    _id itemId userId orderId qty purchase gift 
+    }
+}`;
+
 
 export {
     REGISTER,
     CREATESHOP,
-    ADDCART
+    ADDCART,
+    ADDITEM,
+    UPDATEQTY,
+    UPDATEGIFT
+
 }

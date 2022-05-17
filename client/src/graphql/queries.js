@@ -10,6 +10,7 @@ query{ getItemsList {
 }
 `; 
 
+
 const GET_SHOP_NAME = gql`
 query getShopById($userId : String) {
   getShopById(userId : $userId){
@@ -25,10 +26,17 @@ query getPurchases($userId : String) {
   }
 }
 `; 
+const GET_ITEM_BY_ID = gql`
+query{ getItemById($itemId : String) {
+  getItemById(itemId : $itemId) {
+    _id userId itemName itemCategory itemPrice itemDescription itemCount itemImage 
+  }
+}
+`; 
 
 const GET_CART = gql`
-query getPurchases($userId : String) {
-  getPurchases(userId : $userId){
+query getCart($userId : String) {
+  getCart(userId : $userId){
     _id  itemId{_id userId itemName itemCategory itemPrice itemDescription itemCount itemImage} userId orderId qty purchase gift 
   }
 }
@@ -39,5 +47,6 @@ export {
     GET_ITEM_LIST,
     GET_SHOP_NAME,
     GET_PURCHASES,
-    GET_CART
+    GET_CART,
+    GET_ITEM_BY_ID
 }
